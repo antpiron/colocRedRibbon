@@ -10,14 +10,24 @@ RedRibbonColoc <- function(data, .ensg, half = 6300, algorithm="ea", niter=96)
 
     whole.fraction=0.6
     if ( algorithm == "ea" )
-        quadrants <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algo
+        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algo
 rithm="ea", niter=niter)
     else
-        quadrants <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=75
+        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=75
 0, n=750, niter=niter)
 
+
+    structure(list(data = dt,
+                   rr = rr,
+                   quadrants = quad),
+              class = "RedRibbonColoc")
+        
+}
+
+coloc.RedRibbonColoc  <- function(self)
+{
     ## Coloc
-    dt.rr <- if ( quadrants$whole$log_padj >= -log(0.05) ) dt[quadrants$whole$positions] else dt
+    dt.rr <- if ( quadrants$whole$log_padj >= -log(0.05) ) self$dt[self$quadrants$whole$positions] else dt
         
     mylist.eQTL <- list(pvalues=dt.rr$pval.eQTL,
                         N=dt.rr$n.eQTL,
@@ -49,9 +59,6 @@ rithm="ea", niter=niter)
     
     coloc.res <- list(bestSnp = bestSnp, PP.H4.abf = PP.H4.abf, SNP.PP.H4 = SNP.PP.H4, ncredibleSet99 = ncredibleSet99, credibleSet99 = credibleSet99)
     
-    structure(list(data = dt),
-              class = "RedRibbonColoc")
-        
 }
 
 ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE)
