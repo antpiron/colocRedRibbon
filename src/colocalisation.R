@@ -1,33 +1,50 @@
 
 
-RedRibbonColoc <- function(data, .ensg, half = 6300, algorithm="ea", niter=96)
+#' Compute an enrichment based colocalization
+#'
+#'
+#' @param data a data.frame with columns id, a, b
+#' @param algorithm the algorithm to use for minimal hypergeometric p-value searching
+#' @param half the linkage desiquilibrium fitting function parameter for permutation
+#' @param niter the number of iteration for adjusted p-value computation
+#' @return RedRibbonColoc object
+#' @export
+RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
+                           columns=c(id="id", position="position", a="a", b="b"))
 {
     dt <-  as.data.table(data)
 
+    a.pval <- dt[[ columns[["a"]] ]]
+    b.pval <- dt[[ columns[["b"]] ]]
+    pos <- dt[[ columns[["position"]] ]]
     ## id, chr, position, nea, ea, gwas.eaf, gwas.pvalue, gwas.or, gwas.n, eqtl.eaf, eqtl.pvalue, eqtl.n, eqtl.direction
-    deps <- rrho_ldfit_prediction(half, dt$pval.eQTL, dt$pos)
-    rr <- RedRibbon(dt$pval.GWAS, dt$pval.eQTL, correlation=newLDFIT(dt$pos, deps, half=half) )
+    deps <- rrho_ldfit_prediction(half, b.pval, pos)
+    rr <- RedRibbon(a.pval, b.pval, correlation=newLDFIT(pos, deps, half=half) )
 
     whole.fraction=0.6
-    if ( algorithm == "ea" )
-        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algo
-rithm="ea", niter=niter)
+    if ( algorithm[[1]] == "ea" )
+        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algorithm="ea", niter=niter)
     else
-        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=75
-0, n=750, niter=niter)
+        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=750, n=750, niter=niter)
 
 
     structure(list(data = dt,
                    rr = rr,
-                   quadrants = quad),
+                   quadrants = quad,
+                   columns = columns),
               class = "RedRibbonColoc")
         
 }
 
-coloc.RedRibbonColoc  <- function(self)
+coloc <- function (self, ...)
+{
+    UseMethod("coloc", self)
+}
+
+coloc.RedRibbonColoc  <- function(self, ...)
 {
     ## Coloc
-    dt.rr <- if ( quadrants$whole$log_padj >= -log(0.05) ) self$dt[self$quadrants$whole$positions] else dt
+    dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else data
         
     mylist.eQTL <- list(pvalues=dt.rr$pval.eQTL,
                         N=dt.rr$n.eQTL,
