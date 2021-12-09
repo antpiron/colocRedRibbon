@@ -14,7 +14,7 @@ Suggests:
     knitr,
     rmarkdown,
     markdown
-Depends: R (>= 3.1.0), RedRibbon (>= 1), coloc, data.table
+Depends: R (>= 3.1.0), RedRibbon (>= 1), coloc, data.table, ggplot, ggpubr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

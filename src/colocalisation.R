@@ -10,7 +10,9 @@
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
-                           columns=c(id="id", position="position", a="a", b="b"))
+                           columns=c(id="id", position="position", a="a", b="b",
+                                     a.n="a.n", a.eaf="a.eaf",
+                                     b.n="b.n", b.eaf="b.eaf",))
 {
     dt <-  as.data.table(data)
 
@@ -43,23 +45,25 @@ coloc <- function (self, ...)
 
 coloc.RedRibbonColoc  <- function(self, ...)
 {
-    ## Coloc
     dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else data
-        
-    mylist.eQTL <- list(pvalues=dt.rr$pval.eQTL,
-                        N=dt.rr$n.eQTL,
-                        MAF=dt.rr$maf,
-                        snp=dt.rr$rsid,
-                        type="quant"
-                        )
-    mylist.GWAS <- list(pvalues=dt.rr$pval.GWAS,
-                        N=dt.rr$n.GWAS,
-                        MAF=dt.rr$maf,
-                        snp=dt.rr$rsid,
-                        type="quant"
-                        )
 
-    coloc.abf.res <- coloc.abf(mylist.eQTL, mylist.GWAS)
+    a.eaf <- dt.rr[[ self$columns[[ "a.eaf" ]]  ]]
+    mylist.a <- list(pvalues=dt.rr[[ self$columns[[ "a" ]]  ]],
+                     N=dt.rr[[ self$columns[[ "a.n" ]]  ]],
+                     MAF=ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf),
+                     snp=dt.rr[[ self$columns[[ "id" ]]  ]],
+                     type="quant"
+                     )
+    
+    b.eaf <- dt.rr[[ self$columns[[ "b.eaf" ]]  ]]
+    mylist.b <- list(pvalues=dt.rr[[ self$columns[[ "b" ]]  ]],
+                     N=dt.rr[[ self$columns[[ "b.n" ]]  ]],
+                     MAF=ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf),
+                     snp=dt.rr[[ self$columns[[ "id" ]]  ]],
+                     type="quant"
+                     )
+
+    coloc.abf.res <- coloc.abf(mylist.a, mylist.b)
     results <- as.data.table(coloc.abf.res$results)
     
     setorder(results, -SNP.PP.H4)
@@ -75,7 +79,10 @@ coloc.RedRibbonColoc  <- function(self, ...)
     PP.H4.abf <- coloc.abf.res$summary["PP.H4.abf"]
     
     coloc.res <- list(bestSnp = bestSnp, PP.H4.abf = PP.H4.abf, SNP.PP.H4 = SNP.PP.H4, ncredibleSet99 = ncredibleSet99, credibleSet99 = credibleSet99)
-    
+
+    self$coloc <- coloc.res
+
+    return(self)
 }
 
 ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE)
