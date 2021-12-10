@@ -12,7 +12,7 @@
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
                            columns=c(id="id", position="position", a="a", b="b",
                                      a.n="a.n", a.eaf="a.eaf",
-                                     b.n="b.n", b.eaf="b.eaf",))
+                                     b.n="b.n", b.eaf="b.eaf"))
 {
     dt <-  as.data.table(data)
 
@@ -85,64 +85,93 @@ coloc.RedRibbonColoc  <- function(self, ...)
     return(self)
 }
 
-ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE)
+ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=c("a", "b"), tss = NULL)
 {
-    gg_quad <- ggplot(self$rr, labels=c("GWAS", "eQTL"), quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
+    gg_quad <- ggplot(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
         coord_fixed(ratio=1) + theme(legend.position = "none")
+
+    log.a <- paste0("-log(", self$columns[[ "a" ]],")")
+    log.b <- paste0("-log(", self$columns[[ "b" ]],")")
+    position.mb <- paste0(self$columns[[ "position" ]], "/1000000")
+    id.col <- self$columns[[ 'id' ]]
     
-    gg_manh <-  ggplot(self$dt, aes(x=-log(pval.eQTL), y=-log(pval.GWAS))) +
+    gg_manh <-  ggplot(self$data, aes_string(x=log.a, y=log.b)) +
         geom_point() +
-        geom_point(data=self$dt[self$quadrants$whole$positions],
-                   mapping=aes(x=-log(pval.eQTL), y=-log(pval.GWAS)), col="steelblue", size=2)
+        geom_point(data=self$data[self$quadrants$whole$positions],
+                   mapping=aes_string(x=log.a, y=log.b),
+                   col="steelblue", size=2) +
+        xlab(paste0("-log ", labels[[1]])) +
+        ylab(paste0("-log ", labels[[2]]))
     
+
     if (! is.null(self$coloc) )
     {
         gg_manh <- gg_manh +
-            geom_point(data=self$dt[rsid %in%  self$coloc$credibleSet99,],
-                       mapping=aes(x=-log(pval.eQTL), y=-log(pval.GWAS)), col="green", size=2) +
-            geom_point(data=self$dt[rsid ==  self$coloc$bestSnp,],
-                       mapping=aes(x=-log(pval.eQTL), y=-log(pval.GWAS)), col="red", size=2) +
-            geom_text_repel(data=self$dt[rsid ==  self$coloc$bestSnp,],
-                            mapping=aes(x=-log(pval.eQTL), y=-log(pval.GWAS), label=rsid),
+            geom_point(data=self$data[get(self$columns[[ "id" ]])  %in%  self$coloc$credibleSet99,],
+                       mapping=aes_string(x=log.a, y=log.b),
+                                          col="green", size=2) +
+            geom_point(data=self$data[get(self$columns[[ "id" ]]) ==  self$coloc$bestSnp,],
+                       mapping=aes_string(x=log.a, y=log.b), col="red", size=2) +
+            geom_text_repel(data=self$data[get(self$columns[[ "id" ]]) ==  self$coloc$bestSnp,],
+                            mapping=aes_string(x=log.a,
+                                               y=log.b,
+                                               label=id.col),
                             force = 1, nudge_x = 10, nudge_y = 10, color="red") +
             theme(legend.position = "none")
     }
 
+
     
-    gg_manh_gwas <-  ggplot(self$dt, aes(x=pos/1000000, y=-log(pval.GWAS))) + theme_bw()+
+    gg_manh_b <-  ggplot(self$data,
+                            aes_string(x=paste0(self$columns[[ "position" ]], "/1000000"),
+                                       y=paste0("-log(", self$columns[[ "b" ]],")"))) + theme_bw()+
         geom_point() +
-        geom_point(data=self$dt[self$quadrants$whole$positions],
-                   mapping=aes(x=pos/1000000, y=-log(pval.GWAS)), col="steelblue", size=2)  +
-        geom_vline(xintercept = self$tss / 1000000, linetype="dotted", color = "red") + 
+        geom_point(data=self$data[self$quadrants$whole$positions],
+                   mapping=aes_string(x=position.mb,
+                                      y=log.b), col="steelblue", size=2)  +
+        geom_vline(xintercept = tss / 1000000, linetype="dotted", color = "red") + 
         xlab("Position (MBp)") +
+        ylab(paste0("-log ", labels[[2]])) +
         scale_x_continuous(breaks= pretty_breaks())
+    
     
     if (! is.null(self$coloc) )
     {
-        gg_manh_gwas <- gg_manh_gwas +
-            geom_point(data=self$dt[rsid %in%  self$coloc$credibleSet99,],
-                       mapping=aes(x=pos/1000000, y=-log(pval.GWAS)), col="green", size=2) +
-            geom_point(data=self$dt[rsid ==  self$coloc$bestSnp,],
-                       mapping=aes(x=pos/1000000, y=-log(pval.GWAS)), col="red", size=2) 
+        gg_manh_b <- gg_manh_b +
+            geom_point(data=self$data[get(self$columns[[ "id" ]]) %in%  self$coloc$credibleSet99,],
+                       mapping=aes_string(x=position.mb,
+                                          y=log.b), col="green", size=2) +
+            geom_point(data=self$data[get(self$columns[[ "id" ]]) ==  self$coloc$bestSnp,],
+                       mapping=aes_string(x=position.mb,
+                                          y=log.b), col="red", size=2)
     }
 
-    gg_manh_eqtl <-  ggplot(self$dt, aes(x=pos/1000000, y=-log(pval.eQTL))) + theme_bw()+
+    
+    gg_manh_a <-  ggplot(self$data,
+                         aes_string(x=paste0(self$columns[[ "position" ]], "/1000000"),
+                                    y=paste0("-log(", self$columns[[ "a" ]],")"))) + theme_bw()+
         geom_point() +
-        geom_point(data=self$dt[self$quadrants$whole$positions],
-                   mapping=aes(x=pos/1000000, y=-log(pval.eQTL)), col="steelblue", size=2)  +
-        geom_vline(xintercept = self$tss / 1000000, linetype="dotted", color = "red")  +
+        geom_point(data=self$data[self$quadrants$whole$positions],
+                   mapping=aes_string(x=position.mb,
+                                      y=log.a), col="steelblue", size=2)  +
+        geom_vline(xintercept = tss / 1000000, linetype="dotted", color = "red") + 
         xlab("Position (MBp)") +
+        ylab(paste0("-log ", labels[[1]])) +
         scale_x_continuous(breaks= pretty_breaks())
 
+    
     if (! is.null(self$coloc) )
     {
-        gg_manh_eqtl <- gg_manh_eqtl +
-            geom_point(data=self$dt[rsid %in%  self$coloc$credibleSet99,],
-                       mapping=aes(x=pos/1000000, y=-log(pval.eQTL)), col="green", size=2) +
-            geom_point(data=self$dt[rsid ==  self$coloc$bestSnp,],
-                       mapping=aes(x=pos/1000000, y=-log(pval.eQTL)), col="red", size=2) 
+        gg_manh_a <- gg_manh_a +
+            geom_point(data=self$data[get(self$columns[[ "id" ]]) %in%  self$coloc$credibleSet99,],
+                       mapping=aes_string(x=position.mb,
+                                          y=log.a), col="green", size=2) +
+            geom_point(data=self$data[get(self$columns[[ "id" ]]) ==  self$coloc$bestSnp,],
+                       mapping=aes_string(x=position.mb,
+                                          y=log.a), col="red", size=2)
     }
 
+ 
     title  <- self$shortid
     if (! is.null(self$coloc) )
     {
@@ -152,7 +181,7 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE)
                           " ; SNP.PP.H4 = ", formatC(self$coloc$SNP.PP.H4, digit=2), ")")
     }
 
-    list.of.plots <- list(gg_quad, gg_manh_eqtl, gg_manh, gg_manh_gwas)[plot.order]
+    list.of.plots <- list(gg_quad, gg_manh_a, gg_manh, gg_manh_b)[plot.order]
     square.gg <- do.call(ggpubr::ggarrange, c(list.of.plots,
                                               ncol = 2, nrow = 2))
     gg_merge <- if (show.title) annotate_figure(square.gg, top = title) else square.gg 
