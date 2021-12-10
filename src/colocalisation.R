@@ -85,7 +85,7 @@ coloc.RedRibbonColoc  <- function(self, ...)
     return(self)
 }
 
-ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=c("a", "b"), tss = NULL)
+ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=c("a", "b"), tss = NULL, shortid = NULL)
 {
     gg_quad <- ggplot(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
         coord_fixed(ratio=1) + theme(legend.position = "none")
@@ -172,7 +172,7 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     }
 
  
-    title  <- self$shortid
+    title  <- shortid
     if (! is.null(self$coloc) )
     {
         title  <- paste0(title,
