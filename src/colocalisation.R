@@ -38,11 +38,13 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         
 }
 
+#' @export
 coloc <- function (self, ...)
 {
     UseMethod("coloc", self)
 }
 
+#' @export
 coloc.RedRibbonColoc  <- function(self, ...)
 {
     dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else data
@@ -85,6 +87,7 @@ coloc.RedRibbonColoc  <- function(self, ...)
     return(self)
 }
 
+#' @export
 ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=c("a", "b"), tss = NULL, shortid = NULL)
 {
     gg_quad <- ggplot(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
