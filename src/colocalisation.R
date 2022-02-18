@@ -3,7 +3,9 @@
 #' Compute an enrichment based colocalization
 #'
 #'
-#' @param data a data.frame with columns id, a, b
+#' @param data a data.frame with columns id, a, b, position. For respectively, the name
+#' of the SNP, the p-value of the first analysis, the p-value of the second analysis, and
+#' the position on the chromosome
 #' @param algorithm the algorithm to use for minimal hypergeometric p-value searching
 #' @param half the linkage desiquilibrium fitting function parameter for permutation
 #' @param niter the number of iteration for adjusted p-value computation
@@ -47,6 +49,7 @@ coloc <- function (self, ...)
 #' @export
 coloc.RedRibbonColoc  <- function(self, ...)
 {
+    ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
     dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else data
 
     a.eaf <- dt.rr[[ self$columns[[ "a.eaf" ]]  ]]
