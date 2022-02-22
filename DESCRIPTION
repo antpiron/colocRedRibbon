@@ -1,12 +1,14 @@
 Package: colocRedRibbon
 Title: colocalisation of GWAS and eQTL based on RRHO
-Version: 1.0.0
+Version: 0.1-1
 Authors@R: 
     person(given = "Anthony",
            family = "Piron",
            role = c("aut", "cre"),
            email = "anthony.piron@ulb.be",
            comment = c(ORCID = ""))
+Author: Anthony Piron [aut, cre]
+Maintainer: Anthony Piron <anthony.piron@ulb.ac.be>
 Description: colocalisation of GWAS and eQTL based on RRHO.
 License: `GPL (>= 3)
 Suggests: 
@@ -14,7 +16,7 @@ Suggests:
     knitr,
     rmarkdown,
     markdown
-Depends: R (>= 3.1.0), RedRibbon (>= 1), coloc, data.table, ggplot, ggpubr
+Depends: R (>= 3.1.0), RedRibbon (>= 0.1), coloc, data.table, ggplot2, ggpubr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

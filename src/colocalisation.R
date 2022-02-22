@@ -1,4 +1,6 @@
 
+## TODO: Add function to run over all genes
+
 
 #' Compute an enrichment based colocalization
 #'
@@ -16,6 +18,12 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
                                      a.n="a.n", a.eaf="a.eaf",
                                      b.n="b.n", b.eaf="b.eaf"))
 {
+    ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="RiskIncrease", b="EffectIncrease")
+    if ( is.null(columns) )
+        columns=c(id="id", position="position", a="a", b="b",
+                  a.n="a.n", a.eaf="a.eaf",
+                  b.n="b.n", b.eaf="b.eaf")
+    
     dt <-  as.data.table(data)
 
     a.pval <- dt[[ columns[["a"]] ]]
@@ -194,3 +202,5 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     
     return(gg_merge)
 }
+
+
