@@ -14,21 +14,30 @@
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
-                           columns=c(id="id", position="position", a="a", b="b",
-                                     a.n="a.n", a.eaf="a.eaf",
-                                     b.n="b.n", b.eaf="b.eaf"))
+                           columns=NULL, risk=NULL, eQTL="")
 {
-    ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="RiskIncrease", b="EffectIncrease")
-    if ( is.null(columns) )
-        columns=c(id="id", position="position", a="a", b="b",
-                  a.n="a.n", a.eaf="a.eaf",
-                  b.n="b.n", b.eaf="b.eaf")
+    ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
+    .columns <- c(id="id", position="position", a="a", b="b",
+                  a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", 
+                  b.n="b.n", b.eaf="b.eaf", b.or="a.or", a.beta="b.beta")
+    .columns[names(columns)]  <- columns
+    columns <- .columns
+    
     
     dt <-  as.data.table(data)
+    .intersect <- intersect(columns, names(dt))
+    dt <- dt[, .intersect, with=FALSE]
+    .swap_columns <- setNames(names(columns), columns)
+    colnames(dt) <- sapply(colnames(dt), function(x) .swap_columns[x])
+    
+    if (! is.null(risk) )
+    {
+         dt[a.or < 1.0, c(a.or, a.eaf) := list(1.0 / a.or, 1 - a.eaf) ]
+    }
 
-    a.pval <- dt[[ columns[["a"]] ]]
-    b.pval <- dt[[ columns[["b"]] ]]
-    pos <- dt[[ columns[["position"]] ]]
+    a.pval <- dt$a
+    b.pval <- dt$b
+    pos <- dt$position
     ## id, chr, position, nea, ea, gwas.eaf, gwas.pvalue, gwas.or, gwas.n, eqtl.eaf, eqtl.pvalue, eqtl.n, eqtl.direction
     deps <- rrho_ldfit_prediction(half, b.pval, pos)
     rr <- RedRibbon(a.pval, b.pval, correlation=newLDFIT(pos, deps, half=half) )
