@@ -2,6 +2,13 @@
 ## TODO: Add function to run over all genes
 
 
+are.cols <- function (dt, cols)
+{
+    for (col in cols)
+        if ( is.null(dt[[col]]) )
+            stop(paste0("'", col, "' does not exist."))
+}
+
 #' Compute an enrichment based colocalization
 #'
 #'
@@ -38,29 +45,14 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         
         if ( "a" == risk)
         {
-            if (is.null(dt$a.or) )
-                stop("a.or does not exist.")
-            if (is.null(dt$a.eaf) )
-                stop("a.eaf does not exist.")
-            if (is.null(dt$b.beta) )
-                stop("b.beta does not exist.")
-            if (is.null(dt$b.eaf) )
-                stop("b.eaf does not exist.")
-
+            are.cols(dt, c("a.or", "a.eaf", "b.beta", "b.eaf"))
             
             dt[a.or < 1.0, c(a.or, a.eaf, b.beta, b.eaf) := list(1.0 / a.or, 1 - a.eaf,
                                                                  -b.beta, 1 - b.eaf) ]
-             dt <- dt[effect(b.beta, 0),]
+            dt <- dt[effect(b.beta, 0),]
         } else if ( "b" == risk )
         {
-            if (is.null(dt$b.or) )
-                stop("b.or does not exist.")
-            if (is.null(dt$b.eaf) )
-                stop("b.eaf does not exist.")
-            if (is.null(dt$a.beta) )
-                stop("a.beta does not exist.")
-            if (is.null(dt$a.eaf) )
-                stop("a.eaf does not exist.")
+            are.cols(dt, c("b.or", "b.eaf", "a.beta", "a.eaf"))
 
             dt[b.or < 1.0, c(b.or, b.eaf, a.beta, a.eaf) := list(1.0 / b.or, 1 - b.eaf,
                                                                  -a.beta, 1 - a.eaf) ]
