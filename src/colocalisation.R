@@ -32,6 +32,10 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     
     if (! is.null(risk) )
     {
+        if (! is.function(effect) )
+            stop("'effect' should be a function.")
+ 
+        
         if ( "a" == risk)
         {
             if (is.null(dt$a.or) )
@@ -46,6 +50,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
             
             dt[a.or < 1.0, c(a.or, a.eaf, b.beta, b.eaf) := list(1.0 / a.or, 1 - a.eaf,
                                                                  -b.beta, 1 - b.eaf) ]
+             dt <- dt[effect(b.beta, 0),]
         } else if ( "b" == risk )
         {
             if (is.null(dt$b.or) )
@@ -59,22 +64,14 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
 
             dt[b.or < 1.0, c(b.or, b.eaf, a.beta, a.eaf) := list(1.0 / b.or, 1 - b.eaf,
                                                                  -a.beta, 1 - a.eaf) ]
+            dt <- dt[effect(a.beta, 0),]
         } else
             stop("risk should be either 'a' or 'b'.")
-        
-        if (is.null(effect) )
-            stop()
-        
-        if ("a" == risk)
-            dt <- dt[effect(b.beta, 0),]
-        else 
-            dt <- dt[effect(a.beta, 0),]
     }
 
     a.pval <- dt$a
     b.pval <- dt$b
     pos <- dt$position
-    ## id, chr, position, nea, ea, gwas.eaf, gwas.pvalue, gwas.or, gwas.n, eqtl.eaf, eqtl.pvalue, eqtl.n, eqtl.direction
     deps <- rrho_ldfit_prediction(half, b.pval, pos)
     rr <- RedRibbon(a.pval, b.pval, correlation=newLDFIT(pos, deps, half=half) )
 
