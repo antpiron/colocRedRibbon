@@ -14,7 +14,7 @@
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
-                           columns=NULL, risk=NULL)
+                           columns=NULL, risk=NULL, effect=`>=`)
 {
     ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
     .columns <- c(id="id", position="position", a="a", b="b",
@@ -35,18 +35,40 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         if ( "a" == risk)
         {
             if (is.null(dt$a.or) )
-                stop("a.or does not exists.")
+                stop("a.or does not exist.")
+            if (is.null(dt$a.eaf) )
+                stop("a.eaf does not exist.")
+            if (is.null(dt$b.beta) )
+                stop("b.beta does not exist.")
+            if (is.null(dt$b.eaf) )
+                stop("b.eaf does not exist.")
+
             
             dt[a.or < 1.0, c(a.or, a.eaf, b.beta, b.eaf) := list(1.0 / a.or, 1 - a.eaf,
                                                                  -b.beta, 1 - b.eaf) ]
         } else if ( "b" == risk )
         {
             if (is.null(dt$b.or) )
-                stop("b.or does not exists.")
-            
+                stop("b.or does not exist.")
+            if (is.null(dt$b.eaf) )
+                stop("b.eaf does not exist.")
+            if (is.null(dt$a.beta) )
+                stop("a.beta does not exist.")
+            if (is.null(dt$a.eaf) )
+                stop("a.eaf does not exist.")
+
             dt[b.or < 1.0, c(b.or, b.eaf, a.beta, a.eaf) := list(1.0 / b.or, 1 - b.eaf,
                                                                  -a.beta, 1 - a.eaf) ]
-        }
+        } else
+            stop("risk should be either 'a' or 'b'.")
+        
+        if (is.null(effect) )
+            stop()
+        
+        if ("a" == risk)
+            dt <- dt[effect(b.beta, 0),]
+        else 
+            dt <- dt[effect(a.beta, 0),]
     }
 
     a.pval <- dt$a
