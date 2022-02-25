@@ -40,11 +40,13 @@ data[, a.or := exp(rnorm(n))]
 data[, b.beta := rnorm(n)]
 
 rrColoc <- RedRibbonColoc(data, risk="a") %>% coloc()
-ggplot(rrColoc)
+test_that("Coloc", {
+    expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
+    expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
+})
 
 rrColoc <- RedRibbonColoc(data, risk="a", effect=`<=`) %>% coloc()
-ggplot(rrColoc)
-
-.data <- data
-.data[a.or < 1.0, c("a.or", "a.eaf", "b.beta", "b.eaf") := list(1.0 / a.or, 1 - a.eaf,
-                                                        -b.beta, 1 - b.eaf) ]
+test_that("Coloc", {
+    expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
+    expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
+})
