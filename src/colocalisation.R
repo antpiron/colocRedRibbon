@@ -18,6 +18,9 @@ are.cols <- function (dt, cols)
 #' @param algorithm the algorithm to use for minimal hypergeometric p-value searching
 #' @param half the linkage desiquilibrium fitting function parameter for permutation
 #' @param niter the number of iteration for adjusted p-value computation
+#' @param risk the GWAS dataset with an odd-ratio (e.g. a.or or b.or) either NULL, 'a' or 'b'
+#' @param effect an operator like `>=` or `<=` indicating the effect direction for the non-risk
+#' dataset
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,

@@ -40,7 +40,9 @@ data[, a.or := exp(rnorm(n))]
 data[, b.beta := rnorm(n)]
 
 rrColoc <- RedRibbonColoc(data, risk="a") %>% coloc()
+ggplot(rrColoc)
 
+rrColoc <- RedRibbonColoc(data, risk="a", effect=`<=`) %>% coloc()
 ggplot(rrColoc)
 
 .data <- data
