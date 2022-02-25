@@ -14,17 +14,21 @@ are.cols <- function (dt, cols)
 #'
 #' @param data a data.frame with columns id, a, b, position. For respectively, the name
 #' of the SNP, the p-value of the first analysis, the p-value of the second analysis, and
-#' the position on the chromosome
+#' the position on the chromosome. Additionnal columns are for colocalisation:
+#' [ab].n (number of samples of the analysis), [ab].eaf (effect allele frequency),
+#' [ab].or (odd-ratio) and/or [ab].beta (effect slope).
 #' @param algorithm the algorithm to use for minimal hypergeometric p-value searching
 #' @param half the linkage desiquilibrium fitting function parameter for permutation
 #' @param niter the number of iteration for adjusted p-value computation
 #' @param risk the GWAS dataset with an odd-ratio (e.g. a.or or b.or) either NULL, 'a' or 'b'
 #' @param effect an operator like `>=` or `<=` indicating the effect direction for the non-risk
 #' dataset
+#' @param columns a named vector with column names in the `data' data frame
+#' 
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
-                           columns=NULL, risk=NULL, effect=`>=`)
+                           risk=NULL, effect=`>=`, columns=NULL)
 {
     ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
     .columns <- c(id="id", position="position", a="a", b="b",
@@ -39,6 +43,9 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     dt <- dt[, .intersect, with=FALSE]
     .swap_columns <- setNames(names(columns), columns)
     colnames(dt) <- sapply(colnames(dt), function(x) .swap_columns[x])
+
+    are.cols(dt, c("id", "a", "b"))
+    
     
     if (! is.null(risk) )
     {
