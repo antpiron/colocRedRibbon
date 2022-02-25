@@ -26,7 +26,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
     .columns <- c(id="id", position="position", a="a", b="b",
                   a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", 
-                  b.n="b.n", b.eaf="b.eaf", b.or="a.or", a.beta="b.beta")
+                  b.n="b.n", b.eaf="b.eaf", b.or="b.or", b.beta="b.beta")
     .columns[names(columns)]  <- columns
     columns <- .columns
     
@@ -45,16 +45,17 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         
         if ( "a" == risk)
         {
+            print(dt)
             are.cols(dt, c("a.or", "a.eaf", "b.beta", "b.eaf"))
             
-            dt[a.or < 1.0, c(a.or, a.eaf, b.beta, b.eaf) := list(1.0 / a.or, 1 - a.eaf,
-                                                                 -b.beta, 1 - b.eaf) ]
+            dt[a.or < 1.0, c("a.or", "a.eaf", "b.beta", "b.eaf") := list(1.0 / a.or, 1 - a.eaf,
+                                                                         -b.beta, 1 - b.eaf) ]
             dt <- dt[effect(b.beta, 0),]
         } else if ( "b" == risk )
         {
             are.cols(dt, c("b.or", "b.eaf", "a.beta", "a.eaf"))
 
-            dt[b.or < 1.0, c(b.or, b.eaf, a.beta, a.eaf) := list(1.0 / b.or, 1 - b.eaf,
+            dt[b.or < 1.0, c("b.or", "b.eaf", "a.beta", "a.eaf") := list(1.0 / b.or, 1 - b.eaf,
                                                                  -a.beta, 1 - a.eaf) ]
             dt <- dt[effect(a.beta, 0),]
         } else
