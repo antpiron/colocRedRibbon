@@ -55,7 +55,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         
         if ( "a" == risk)
         {
-            print(dt)
+            ## print(dt)
             are.cols(dt, c("a.or", "a.eaf", "b.beta", "b.eaf"))
             
             dt[a.or < 1.0, c("a.or", "a.eaf", "b.beta", "b.eaf") := list(1.0 / a.or, 1 - a.eaf,
