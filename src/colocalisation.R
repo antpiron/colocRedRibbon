@@ -103,7 +103,7 @@ coloc <- function (self, ...)
 coloc.RedRibbonColoc  <- function(self, ...)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
-    dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else data
+    dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
     a.eaf <- dt.rr$a.eaf
     mylist.a <- list(pvalues=dt.rr$a,
