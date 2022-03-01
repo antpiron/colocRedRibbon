@@ -93,6 +93,10 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         
 }
 
+#' Compute a colocalisation
+#'
+#' 
+#'@return RedRibbonColoc object
 #' @export
 coloc <- function (self, ...)
 {
