@@ -167,7 +167,8 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
                    mapping=aes(x=-log(a), y=-log(b)),
                    col="steelblue", size=2) +
         xlab(paste0("-log ", labels[[1]])) +
-        ylab(paste0("-log ", labels[[2]]))
+        ylab(paste0("-log ", labels[[2]])) +
+        theme_bw()
     
 
     if (! is.null(self$coloc) )
@@ -201,9 +202,9 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
         {
             gg <- gg +
                 geom_point(data=self$data[id %in%  self$coloc$credibleSet99,],
-                           mapping=aes(x=position / 1000000, y=-log(b)), col="green", size=2) +
+                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="green", size=2) +
                 geom_point(data=self$data[id ==  self$coloc$bestSnp,],
-                           mapping=aes(x=position / 1000000, y=-log(b)), col="red", size=2)
+                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="red", size=2)
         }
 
         return(gg)
@@ -226,6 +227,8 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     square.gg <- do.call(ggpubr::ggarrange, c(list.of.plots,
                                               ncol = 2, nrow = 2))
     gg_merge <- if (show.title) annotate_figure(square.gg, top = title) else square.gg 
+
+    gg_merge <- gg_merge + bgcolor("#FFFFFF")
     
     return(gg_merge)
 }
