@@ -28,7 +28,7 @@ are.cols <- function (dt, cols)
 #' @return RedRibbonColoc object
 #' @export
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
-                           risk=NULL, effect=`>=`, columns=NULL)
+                           risk=NULL, effect=`>=`, columns=NULL, shortlist=TRUE)
 {
     ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
     .columns <- c(id="id", position="position", a="a", b="b",
@@ -74,16 +74,22 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
 
     a.pval <- dt$a
     b.pval <- dt$b
-    pos <- dt$position
-    deps <- rrho_ldfit_prediction(half, b.pval, pos)
-    rr <- RedRibbon(a.pval, b.pval, correlation=newLDFIT(pos, deps, half=half) )
 
-    whole.fraction=0.6
-    if ( algorithm[[1]] == "ea" )
-        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algorithm="ea", niter=niter)
-    else
-        quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=750, n=750, niter=niter)
-
+    if (shortlist)
+    {
+        pos <- dt$position
+        deps <- rrho_ldfit_prediction(half, b.pval, pos)
+        rr <- RedRibbon(a.pval, b.pval, correlation=newLDFIT(pos, deps, half=half) )
+        
+        whole.fraction=0.6
+        if ( algorithm[[1]] == "ea" )
+            quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, algorithm="ea", niter=niter)
+        else
+            quad <- quadrants(rr, whole=TRUE, whole.fraction=whole.fraction, permutation=TRUE, m=750, n=750, niter=niter)
+    } else {
+        rr <- RedRibbon(a.pval, b.pval, NULL)
+        quad <- NULL
+    }
 
     structure(list(data = dt,
                    rr = rr,
@@ -107,7 +113,7 @@ coloc <- function (self, ...)
 coloc.RedRibbonColoc  <- function(self, ...)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
-    dt.rr <- if ( self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
+    dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
     a.eaf <- dt.rr$a.eaf
     mylist.a <- list(pvalues=dt.rr$a,
@@ -163,13 +169,14 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     
     gg_manh <-  ggplot(self$data, aes(x=-log(a), y=-log(b)) ) +
         geom_point() +
-        geom_point(data=self$data[self$quadrants$whole$positions],
-                   mapping=aes(x=-log(a), y=-log(b)),
-                   col="steelblue", size=2) +
         xlab(paste0("-log ", labels[[1]])) +
         ylab(paste0("-log ", labels[[2]])) +
         theme_bw()
-    
+
+    if (! is.null(self$quadrants) )
+        gg_manh <- gg_manh + geom_point(data=self$data[self$quadrants$whole$positions],
+                                        mapping=aes(x=-log(a), y=-log(b)),
+                                        col="steelblue", size=2) 
 
     if (! is.null(self$coloc) )
     {
@@ -190,14 +197,16 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     {        
         gg <-  ggplot(self$data, aes(x=position / 1000000, y=-log(get(axis))) ) +
             theme_bw() +
-            geom_point() +
-            geom_point(data=self$data[self$quadrants$whole$positions],
-                       mapping=aes(x=position / 1000000, y=-log(get(axis))), col="steelblue", size=2)  +
+            geom_point()  +
             geom_vline(xintercept = tss / 1000000, linetype="dotted", color = "red") + 
             xlab("Position (MBp)") +
             ylab(paste0("-log ", label)) +
             scale_x_continuous(breaks= pretty_breaks())
 
+        if (! is.null(self$quadrants) )
+            gg <- gg + geom_point(data=self$data[self$quadrants$whole$positions],
+                                  mapping=aes(x=position / 1000000, y=-log(get(axis))), col="steelblue", size=2)
+        
         if (! is.null(self$coloc) )
         {
             gg <- gg +
