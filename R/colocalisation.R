@@ -24,6 +24,7 @@ are.cols <- function (dt, cols)
 #' @param effect an operator like `>=` or `<=` indicating the effect direction for the non-risk
 #' dataset
 #' @param columns a named vector with column names in the `data' data frame
+#' @param shortlist run RedRibbon before coloc (default = TRUE)
 #' 
 #' @return RedRibbonColoc object
 #' @export
@@ -101,14 +102,20 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
 
 #' Compute a colocalisation
 #'
+#' @param self a colocRedRibbon object
 #' 
-#'@return RedRibbonColoc object
+#' @return RedRibbonColoc object
 #' @export
 coloc <- function (self, ...)
 {
     UseMethod("coloc", self)
 }
 
+#' Compute a colocalisation
+#'
+#' @param self a colocRedRibbon object
+#' 
+#' @return RedRibbonColoc object
 #' @export
 coloc.RedRibbonColoc  <- function(self, ...)
 {
@@ -153,6 +160,16 @@ coloc.RedRibbonColoc  <- function(self, ...)
     return(self)
 }
 
+#' Plot a colocalisation with ggplot
+#'
+#' @param self a colocRedRibbon object
+#' @param plot.order a vector specifying the plot order (default =1:4,  1 = RedRibbon plot, 2 =  manhantan plot for `a`, 3 = plot for `a`and 'b`, 4 = manhantan plot for `b`).
+#' @param show.title shows the title (default = TRUE)
+#' @param labels axis labels
+#' @param tss transcription start site
+#' @param shorid name of the gene
+#' 
+#' @return ggplot object
 #' @export
 ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=NULL, tss = NULL, shortid = NULL)
 {
