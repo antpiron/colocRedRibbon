@@ -258,11 +258,13 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     }
 
     list.of.plots <- list(gg_quad, gg_manh_a, gg_manh, gg_manh_b)[plot.order]
+    .ncol <- if (length(list.of.plots) <= 2) 1 else 2
+    .nrow <- if (length(list.of.plots) <= 2) length(list.of.plots) else 2
     square.gg <- do.call(ggpubr::ggarrange, c(list.of.plots,
-                                              ncol = 2, nrow = 2))
+                                              ncol = .ncol, nrow = .nrow))
     gg_merge <- if (show.title) annotate_figure(square.gg, top = title) else square.gg 
 
-    gg_merge <- gg_merge + bgcolor("#FFFFFF")
+    gg_merge <- gg_merge + bgcolor("#FFFFFF") + border(size = 0)
     
     return(gg_merge)
 }
