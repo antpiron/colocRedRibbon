@@ -175,11 +175,12 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 #' @param show.title shows the title (default = TRUE)
 #' @param labels axis labels
 #' @param tss transcription start site
-#' @param shorid name of the gene
+#' @param shortid name of the gene
+#' @param title the title of the plot
 #' 
 #' @return ggplot object
 #' @export
-ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=NULL, tss = NULL, shortid = NULL)
+ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=NULL, tss = NULL, shortid = NULL, title = NULL)
 {
     if (is.null(labels) )
         labels  <- c(self$columns[["a"]], self$columns[["b"]])
@@ -247,19 +248,26 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
     gg_manh_b <- ggmanhatan("b", labels[[2]])
     gg_manh_a <- ggmanhatan("a", labels[[1]])
 
- 
-    title  <- shortid
-    if (! is.null(self$coloc) )
+
+    if (is.null(title))
     {
-        title  <- paste0(title,
-                         " - ", self$coloc$bestSnp,
-                         " (PP.H4.abf = ", formatC(self$coloc$PP.H4.abf, digit=2),
-                          " ; SNP.PP.H4 = ", formatC(self$coloc$SNP.PP.H4, digit=2), ")")
+        title  <- shortid
+        if (! is.null(self$coloc) )
+        {
+            title  <- paste0(title,
+                             " - ", self$coloc$bestSnp,
+                             " (PP.H4.abf = ", formatC(self$coloc$PP.H4.abf, digit=2),
+                             " ; SNP.PP.H4 = ", formatC(self$coloc$SNP.PP.H4, digit=2), ")")
+        }
     }
 
     list.of.plots <- list(gg_quad, gg_manh_a, gg_manh, gg_manh_b)[plot.order]
-    .ncol <- if (length(list.of.plots) <= 2) 1 else 2
-    .nrow <- if (length(list.of.plots) <= 2) length(list.of.plots) else 2
+    .ncol <- .nrow <- 1
+    if (1 < length(list.of.plots))
+    {
+        .ncol <- if (length(list.of.plots) <= 2) 1 else 2
+        .nrow <- if (length(list.of.plots) <= 2) length(list.of.plots) else 2
+    }
     square.gg <- do.call(ggpubr::ggarrange, c(list.of.plots,
                                               ncol = .ncol, nrow = .nrow))
     gg_merge <- if (show.title) annotate_figure(square.gg, top = title) else square.gg 
