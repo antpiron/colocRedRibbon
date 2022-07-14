@@ -256,7 +256,7 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
         {
             title  <- paste0(title,
                              " - ", self$coloc$bestSnp,
-                             " (PP.H4.abf = ", formatC(self$coloc$PP.H4.abf, digit=2),
+                             "\n(PP.H4.abf = ", formatC(self$coloc$PP.H4.abf, digit=2),
                              " ; SNP.PP.H4 = ", formatC(self$coloc$SNP.PP.H4, digit=2), ")")
         }
     }
