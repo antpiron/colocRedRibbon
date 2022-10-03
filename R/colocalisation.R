@@ -177,10 +177,13 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 #' @param tss transcription start site
 #' @param shortid name of the gene
 #' @param title the title of the plot
+#' @param highlight a list of SNPs to highlight
 #' 
 #' @return ggplot object
 #' @export
-ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=NULL, tss = NULL, shortid = NULL, title = NULL)
+ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
+                                  labels=NULL, tss = NULL, shortid = NULL, title = NULL,
+                                  highlight=c())
 {
     if (is.null(labels) )
         labels  <- c(self$columns[["a"]], self$columns[["b"]])
@@ -215,6 +218,11 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
             geom_text_repel(data=self$data[id ==  self$coloc$bestSnp,],
                             mapping=aes(x=-log(a), y=-log(b), label=id),
                             force = 1, nudge_x = 10, nudge_y = 10, color="red") +
+            ## geom_point(data=self$data[id %in%  highlight,],
+            ##            mapping=aes(x=-log(a), y=-log(b)), col="yellow", size=2) +
+            geom_text_repel(data=self$data[id %in%  highlight,],
+                            mapping=aes(x=-log(a), y=-log(b), label=id),
+                            force = 1, nudge_x = 3, nudge_y = 3, color="darkgray") +
             theme(legend.position = "none")
     }
 
@@ -239,7 +247,10 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE, labels=
                 geom_point(data=self$data[id %in%  self$coloc$credibleSet99,],
                            mapping=aes(x=position / 1000000, y=-log(get(axis))), col="green", size=2) +
                 geom_point(data=self$data[id ==  self$coloc$bestSnp,],
-                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="red", size=2)
+                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="red", size=2) +
+                geom_text_repel(data=self$data[id %in%  highlight,],
+                                mapping=aes(x=position / 1000000, y=-log(get(axis)), label=id),
+                                force = 1, nudge_x = 3, nudge_y = 3, color="darkgray")
         }
 
         return(gg)
