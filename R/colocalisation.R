@@ -111,6 +111,7 @@ coloc <- function (self, ...)
     UseMethod("coloc", self)
 }
 
+
 #' Compute a colocalisation
 #'
 #' @param self a colocRedRibbon object
@@ -180,15 +181,37 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 #' @param highlight a list of SNPs to highlight
 #' 
 #' @return ggplot object
+#' 
 #' @export
-ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
-                                  labels=NULL, tss = NULL, shortid = NULL, title = NULL,
-                                  highlight=c())
+ggcolocRedRibbon <- function (self, plot.order=1:4, show.title=TRUE,
+                                            labels=NULL, tss = NULL, shortid = NULL, title = NULL,
+                                            highlight=c())
+{
+     UseMethod("ggcolocRedRibbon")
+}
+
+
+#' Plot a colocalisation with ggplot
+#'
+#' @param self a colocRedRibbon object
+#' @param plot.order a vector specifying the plot order (default =1:4,  1 = RedRibbon plot, 2 =  manhantan plot for `a`, 3 = plot for `a`and 'b`, 4 = manhantan plot for `b`).
+#' @param show.title shows the title (default = TRUE)
+#' @param labels axis labels
+#' @param tss transcription start site
+#' @param shortid name of the gene
+#' @param title the title of the plot
+#' @param highlight a list of SNPs to highlight
+#' 
+#' @return ggplot object
+#' @export
+ggcolocRedRibbon.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
+                                            labels=NULL, tss = NULL, shortid = NULL, title = NULL,
+                                            highlight=c())
 {
     if (is.null(labels) )
         labels  <- c(self$columns[["a"]], self$columns[["b"]])
     
-    gg_quad <- ggplot(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
+    gg_quad <- ggRedRibbon(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
         coord_fixed(ratio=1) +
         theme(legend.position = c(0.8, 0.7),
               legend.background = element_rect(fill=alpha('white', 0.2)))
@@ -288,4 +311,24 @@ ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
     return(gg_merge)
 }
 
-
+#' Plot a colocalisation with ggplot
+#'
+#' @param self a colocRedRibbon object
+#' @param plot.order a vector specifying the plot order (default =1:4,  1 = RedRibbon plot, 2 =  manhantan plot for `a`, 3 = plot for `a`and 'b`, 4 = manhantan plot for `b`).
+#' @param show.title shows the title (default = TRUE)
+#' @param labels axis labels
+#' @param tss transcription start site
+#' @param shortid name of the gene
+#' @param title the title of the plot
+#' @param highlight a list of SNPs to highlight
+#' 
+#' @return ggplot object
+#'
+#' @method ggplot RedRibbonColoc
+#' @export
+ggplot.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
+                                  labels=NULL, tss = NULL, shortid = NULL, title = NULL,
+                                  highlight=c())
+{
+    return(ggcolocRedRibbon(self, plot.order, show.title, labels, tss, shortid, title, highlight))
+}
