@@ -26,7 +26,7 @@ devtools::install_github("antpiron/colocRedRibbon", ref = "dev")
 library(colocRedRibbon)
 data("th", package = "colocRedRibbon")
 
-## df is a data.frame with 3 columns: id, a, b
+## th.dt is a data.frame containing
 ## 
 ##        rsid pval.GWAS n.GWAS eaf.GWAS   or.GWAS ea.GWAS nea.GWAS pval.eQTL       pos n.eQTL zscore.eQTL ea.eQTL nea.eQTL eaf.eQTL
 ##   rs1003483     0.350 231420    0.510 1.0063199       T        G   0.68710   2167543    404       0.403       T        G    0.510
