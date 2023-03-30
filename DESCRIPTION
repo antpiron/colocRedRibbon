@@ -20,7 +20,7 @@ Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr, RedRibbon
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Imports: 
