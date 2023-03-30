@@ -1,0 +1,71 @@
+# Description
+
+colocRedRibbon: a [RedRibbon](https://github.com/antpiron/RedRibbon) based colocalization of GWAS and 
+
+# Installation
+
+This procedure have been tested on debian/ubuntu but should work on any linux distribution.
+
+## Directly from Github
+
+In R, just run
+
+```R
+devtools::install_github("antpiron/colocRedRibbon")
+```
+
+or for `dev` branch,
+
+```R
+devtools::install_github("antpiron/colocRedRibbon", ref = "dev")
+```
+
+
+
+## Alternative installation method from the tar.gz released package
+
+In R, download RedRibbon_0.3-1.tar.gz on github, and then the run
+
+```bash
+R CMD INSTALL colocRedRibbon_0.3-1.tar.gz
+```
+
+
+
+# Documentation
+
+```R
+library(colocRedRibbon)
+data("TH", package = "RedRibbon")
+
+## df is a data.frame with 3 columns: id, a, b
+## 
+##        rsid pval.GWAS n.GWAS eaf.GWAS   or.GWAS ea.GWAS nea.GWAS pval.eQTL       pos n.eQTL zscore.eQTL ea.eQTL nea.eQTL eaf.eQTL
+##   rs1003483     0.350 231420    0.510 1.0063199       T        G   0.68710   2167543    404       0.403       T        G    0.510
+##   rs1003484     0.640 231420    0.260 0.9965061       A        G   0.92180   2167618    404      -0.098       A        G    0.260
+##   rs1003889     0.990 187126    0.011 0.9993002       T        G   0.58720   1970108    317       0.543       T        G    0.011
+## ...
+
+## Create colocRedRibbon S3 object
+rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
+                          columns=c(id="rsid", position="pos", a="pval.GWAS", b="pval.eQTL",
+                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.or="or.GWAS", 
+                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.beta="zscore.eQTL"))
+		
+## Run C. Wallace coloc()
+rrc.dec <- coloc(rrc.dec)
+
+ggRedRibbonColoc(rrc.dec, shortid = "TH")
+
+```
+
+
+# Citation
+
+Please cite the [biorxiv pre-print](https://doi.org/10.1101/2022.08.31.505818),
+
+```text
+RedRibbon: A new rank-rank hypergeometric overlap pipeline to compare gene and transcript expression signatures
+Anthony Piron, Florian Szymczak, Maria Inês Alvelos, Matthieu Defrance, Tom Lenaerts, Décio L. Eizirik, Miriam Cnop
+bioRxiv 2022.08.31.505818; doi: https://doi.org/10.1101/2022.08.31.505818 
+```

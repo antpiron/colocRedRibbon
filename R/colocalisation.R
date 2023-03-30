@@ -183,11 +183,11 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 #' @return ggplot object
 #' 
 #' @export
-ggcolocRedRibbon <- function (self, plot.order=1:4, show.title=TRUE,
-                                            labels=NULL, tss = NULL, shortid = NULL, title = NULL,
-                                            highlight=c())
+ggRedRibbonColoc <- function (self, plot.order=1:4, show.title=TRUE,
+                              labels=NULL, tss = NULL, shortid = NULL, title = NULL,
+                              highlight=c())
 {
-     UseMethod("ggcolocRedRibbon")
+     UseMethod("ggRedRibbonColoc")
 }
 
 
@@ -204,7 +204,7 @@ ggcolocRedRibbon <- function (self, plot.order=1:4, show.title=TRUE,
 #' 
 #' @return ggplot object
 #' @export
-ggcolocRedRibbon.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
+ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
                                             labels=NULL, tss = NULL, shortid = NULL, title = NULL,
                                             highlight=c())
 {

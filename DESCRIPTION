@@ -8,7 +8,7 @@ Authors@R:
            email = "anthony.piron@ulb.be",
            comment = c(ORCID = ""))
 Author: Anthony Piron [aut, cre]
-Maintainer: Anthony Piron <anthony.piron@ulb.ac.be>
+Maintainer: Anthony Piron <anthony.piron@ulb.be>
 Description: colocalisation of GWAS and eQTL based on RRHO.
 License: `GPL (>= 3)
 Suggests: 
@@ -16,7 +16,7 @@ Suggests:
     knitr,
     rmarkdown,
     markdown
-Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr
+Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr, RedRibbon
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
