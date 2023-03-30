@@ -20,18 +20,6 @@ or for `dev` branch,
 devtools::install_github("antpiron/colocRedRibbon", ref = "dev")
 ```
 
-
-
-## Alternative installation method from the tar.gz released package
-
-In R, download RedRibbon_0.3-1.tar.gz on github, and then the run
-
-```bash
-R CMD INSTALL colocRedRibbon_0.3-1.tar.gz
-```
-
-
-
 # Documentation
 
 ```R
