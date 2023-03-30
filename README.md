@@ -1,6 +1,6 @@
 # Description
 
-colocRedRibbon: a [RedRibbon](https://github.com/antpiron/RedRibbon) based colocalization of GWAS and 
+colocRedRibbon: a [RedRibbon](https://github.com/antpiron/RedRibbon) based colocalization of GWAS and eQTL.
 
 # Installation
 
