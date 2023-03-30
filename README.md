@@ -36,7 +36,7 @@ R CMD INSTALL colocRedRibbon_0.3-1.tar.gz
 
 ```R
 library(colocRedRibbon)
-data("TH", package = "RedRibbon")
+data("th", package = "colocRedRibbon")
 
 ## df is a data.frame with 3 columns: id, a, b
 ## 
