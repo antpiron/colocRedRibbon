@@ -119,6 +119,7 @@ coloc <- function (self, ...)
 #' This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP.
 #' 
 #' @return RedRibbonColoc object
+#' @method coloc RedRibbonColoc
 #' @export
 coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 {
@@ -202,7 +203,7 @@ ggRedRibbonColoc <- function (self, plot.order=1:4, show.title=TRUE,
 #' @param title the title of the plot
 #' @param highlight a list of SNPs to highlight
 #' 
-#' @return ggplot object
+#' @return ggRedRibbonColoc RedRibbonColoc
 #' @export
 ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
                                             labels=NULL, tss = NULL, shortid = NULL, title = NULL,
