@@ -180,13 +180,14 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = min)
 #' @param shortid name of the gene
 #' @param title the title of the plot
 #' @param highlight a list of SNPs to highlight
+#' @param .log10 output log10 pval (default = FALSE)
 #' 
 #' @return ggplot object
 #' 
 #' @export
 ggRedRibbonColoc <- function (self, plot.order=1:4, show.title=TRUE,
                               labels=NULL, tss = NULL, shortid = NULL, title = NULL,
-                              highlight=c())
+                              highlight=c(), .log10 = FALSE)
 {
      UseMethod("ggRedRibbonColoc")
 }
