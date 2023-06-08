@@ -202,50 +202,52 @@ ggRedRibbonColoc <- function (self, plot.order=1:4, show.title=TRUE,
 #' @param shortid name of the gene
 #' @param title the title of the plot
 #' @param highlight a list of SNPs to highlight
+#' @param .log10 output log10 pval (default = FALSE)
 #' 
 #' @return ggRedRibbonColoc RedRibbonColoc
 #' @export
 ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRUE,
                                             labels=NULL, tss = NULL, shortid = NULL, title = NULL,
-                                            highlight=c())
+                                            highlight=c(), .log10 = FALSE)
 {
     if (is.null(labels) )
         labels  <- c(self$columns[["a"]], self$columns[["b"]])
     
-    gg_quad <- ggRedRibbon(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE) +
+    gg_quad <- ggRedRibbon(self$rr, labels=labels, quadrants=self$quadrants, base_size = 14, show.quadrants=FALSE, .log10 = .log10) +
         coord_fixed(ratio=1) +
         theme(legend.position = c(0.8, 0.7),
               legend.background = element_rect(fill=alpha('white', 0.2)))
 
     ## theme(legend.position = "none")
-
+    mylog <- if (.log10) log10 else log
+    log.label <- if (.log10) "log10" else "log"
     
-    gg_manh <-  ggplot(self$data, aes(x=-log(a), y=-log(b)) ) +
+    gg_manh <-  ggplot(self$data, aes(x=-mylog(a), y=-mylog(b)) ) +
         geom_point() +
-        xlab(paste0("-log ", labels[[1]])) +
-        ylab(paste0("-log ", labels[[2]])) +
+        xlab(paste0("-", log.label, " ", labels[[1]])) +
+        ylab(paste0("-", log.label, " ", labels[[2]])) +
         theme_bw()
 
     if (! is.null(self$quadrants) )
         gg_manh <- gg_manh + geom_point(data=self$data[self$quadrants$whole$positions],
-                                        mapping=aes(x=-log(a), y=-log(b)),
+                                        mapping=aes(x=-mylog(a), y=-mylog(b)),
                                         col="steelblue", size=2) 
 
     if (! is.null(self$coloc) )
     {
         gg_manh <- gg_manh +
             geom_point(data=self$data[id  %in%  self$coloc$credibleSet99,],
-                       mapping=aes(x=-log(a), y=-log(b)),
+                       mapping=aes(x=-mylog(a), y=-mylog(b)),
                                           col="green", size=2) +
             geom_point(data=self$data[id ==  self$coloc$bestSnp,],
-                       mapping=aes(x=-log(a), y=-log(b)), col="red", size=2) +
+                       mapping=aes(x=-mylog(a), y=-mylog(b)), col="red", size=2) +
             geom_text_repel(data=self$data[id ==  self$coloc$bestSnp,],
-                            mapping=aes(x=-log(a), y=-log(b), label=id),
+                            mapping=aes(x=-mylog(a), y=-mylog(b), label=id),
                             force = 1, nudge_x = 10, nudge_y = 10, color="red") +
             ## geom_point(data=self$data[id %in%  highlight,],
-            ##            mapping=aes(x=-log(a), y=-log(b)), col="yellow", size=2) +
+            ##            mapping=aes(x=-mylog(a), y=-mylog(b)), col="yellow", size=2) +
             geom_text_repel(data=self$data[id %in%  highlight,],
-                            mapping=aes(x=-log(a), y=-log(b), label=id),
+                            mapping=aes(x=-mylog(a), y=-mylog(b), label=id),
                             force = 1, nudge_x = 3, nudge_y = 3, color="darkgray") +
             theme(legend.position = "none")
     }
@@ -253,27 +255,27 @@ ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRU
 
     ggmanhatan <- function (axis="a", label="")
     {        
-        gg <-  ggplot(self$data, aes(x=position / 1000000, y=-log(get(axis))) ) +
+        gg <-  ggplot(self$data, aes(x=position / 1000000, y=-mylog(get(axis))) ) +
             theme_bw() +
             geom_point()  +
             geom_vline(xintercept = tss / 1000000, linetype="dotted", color = "red") + 
             xlab("Position (MBp)") +
-            ylab(paste0("-log ", label)) +
+            ylab(paste0("-", log.label, " ", label)) +
             scale_x_continuous(breaks= pretty_breaks())
 
         if (! is.null(self$quadrants) )
             gg <- gg + geom_point(data=self$data[self$quadrants$whole$positions],
-                                  mapping=aes(x=position / 1000000, y=-log(get(axis))), col="steelblue", size=2)
+                                  mapping=aes(x=position / 1000000, y=-mylog(get(axis))), col="steelblue", size=2)
         
         if (! is.null(self$coloc) )
         {
             gg <- gg +
                 geom_point(data=self$data[id %in%  self$coloc$credibleSet99,],
-                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="green", size=2) +
+                           mapping=aes(x=position / 1000000, y=-mylog(get(axis))), col="green", size=2) +
                 geom_point(data=self$data[id ==  self$coloc$bestSnp,],
-                           mapping=aes(x=position / 1000000, y=-log(get(axis))), col="red", size=2) +
+                           mapping=aes(x=position / 1000000, y=-mylog(get(axis))), col="red", size=2) +
                 geom_text_repel(data=self$data[id %in%  highlight,],
-                                mapping=aes(x=position / 1000000, y=-log(get(axis)), label=id),
+                                mapping=aes(x=position / 1000000, y=-mylog(get(axis)), label=id),
                                 force = 1, nudge_x = 3, nudge_y = 3, color="darkgray")
         }
 
