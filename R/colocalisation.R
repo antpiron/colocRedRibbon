@@ -31,7 +31,6 @@ are.cols <- function (dt, cols)
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
                            risk=NULL, effect=`>=`, columns=NULL, shortlist=TRUE)
 {
-    ## TODO: add a parameter to force GWAS risk increase and compute eQTL in only one direction like c(a="or.increase", b="beta.increase")
     .columns <- c(id="id", position="position", a="a", b="b",
                   a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", 
                   b.n="b.n", b.eaf="b.eaf", b.or="b.or", b.beta="b.beta")
@@ -92,7 +91,8 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         quad <- NULL
     }
 
-    structure(list(data = dt,
+    structure(list(risk = risk,
+                   data = dt,
                    rr = rr,
                    quadrants = quad,
                    columns = columns),
@@ -121,11 +121,12 @@ coloc <- function (self, ...)
 #' @return RedRibbonColoc object
 #' @method coloc RedRibbonColoc
 #' @export
-coloc.RedRibbonColoc  <- function(self, n.reduce = min)
+coloc.RedRibbonColoc  <- function(self, n.reduce = max)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
     dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
+    ## TODO: use risk allele to put in CC mode, beta, varbeta
     a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
     if (a.n < 2)
         stop(paste0("coloc.RedRibbonColoc(): number of samples for `a` is abnormaly low (", a.n, " < 2)"))
