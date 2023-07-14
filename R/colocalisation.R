@@ -115,19 +115,29 @@ coloc <- function (self, ...)
 #' Compute a colocalisation
 #'
 #' @param self a colocRedRibbon object
-#' @param n.reduce function to reduce the number of sample columns for a and b into a number (Default: min)
-#' This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP.
+#' @param n.reduce function to reduce the number of sample columns for a and b into a number (Default: max)
+#'                 This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP.
+#'                 a.n or b.n parameters are used if not NULL.
+#' @param a.n the number of for a (Default: NULL)
+#' @param b.n the number of for b (Default: NULL)
+#' @param a.type quant or cc mode for coloc (Default: quant)
+#' @param b.type quant or cc mode for coloc (Default: quant)
 #' 
 #' @return RedRibbonColoc object
 #' @method coloc RedRibbonColoc
 #' @export
-coloc.RedRibbonColoc  <- function(self, n.reduce = max, a.n = NULL, b.n = NULL)
+coloc.RedRibbonColoc  <- function(self,
+                                  n.reduce = max, a.n = NULL, b.n = NULL,
+                                  a.type = "quant", n.type = "quant",
+                                  region = NULL)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
+    ## TODO: add region https://en.wikipedia.org/wiki/Interquartile_range
     dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
     ## TODO: use risk allele to put in CC mode, beta, varbeta
-    a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
+    if ( is.null(a.n) )
+        a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
     if (a.n < 2)
         stop(paste0("coloc.RedRibbonColoc(): number of samples for `a` is abnormaly low (", a.n, " < 2)"))
     a.eaf <- dt.rr$a.eaf
@@ -151,22 +161,23 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = max, a.n = NULL, b.n = NULL)
     ##       coloc = coloc.abf(mylist.eqtl, mylist.gwas)
 
 
-    mylist.a <- list(pvalues=dt.rr$a,
-                     N=a.n,
-                     MAF=ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf),
-                     snp=dt.rr$id,
-                     type="quant"
+    mylist.a <- list(pvalues = dt.rr$a,
+                     N       = a.n,
+                     MAF     = ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf),
+                     snp     = dt.rr$id,
+                     type    = a.type
                      )
     
-    b.n <- ceiling(n.reduce(dt.rr$b.n, na.rm=TRUE))
+    if ( is.null(b.n) )
+        b.n <- ceiling(n.reduce(dt.rr$b.n, na.rm=TRUE))
     if (b.n < 2)
         stop(paste0("coloc.RedRibbonColoc(): number of samples for `b` is abnormaly low (", b.n, " < 2)"))
     b.eaf <- dt.rr$b.eaf
-    mylist.b <- list(pvalues=dt.rr$b,
-                     N=b.n,
-                     MAF=ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf),
-                     snp=dt.rr$id,
-                     type="quant"
+    mylist.b <- list(pvalues = dt.rr$b,
+                     N       = b.n,
+                     MAF     = ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf),
+                     snp     = dt.rr$id,
+                     type    = b.type
                      )
 
     coloc.abf.res <- coloc.abf(mylist.a, mylist.b)
