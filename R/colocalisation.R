@@ -32,8 +32,8 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
                            risk=NULL, effect=`>=`, columns=NULL, shortlist=TRUE)
 {
     .columns <- c(id="id", position="position", a="a", b="b",
-                  a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", 
-                  b.n="b.n", b.eaf="b.eaf", b.or="b.or", b.beta="b.beta")
+                  a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", a.varbeta="a.varbeta",
+                  b.n="b.n", b.eaf="b.eaf", b.or="b.or", b.beta="b.beta", b.varbeta="b.varbeta")
     .columns[names(columns)]  <- columns
     columns <- .columns
     
@@ -121,7 +121,7 @@ coloc <- function (self, ...)
 #' @return RedRibbonColoc object
 #' @method coloc RedRibbonColoc
 #' @export
-coloc.RedRibbonColoc  <- function(self, n.reduce = max)
+coloc.RedRibbonColoc  <- function(self, n.reduce = max, a.n = NULL, b.n = NULL)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
     dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
@@ -131,6 +131,26 @@ coloc.RedRibbonColoc  <- function(self, n.reduce = max)
     if (a.n < 2)
         stop(paste0("coloc.RedRibbonColoc(): number of samples for `a` is abnormaly low (", a.n, " < 2)"))
     a.eaf <- dt.rr$a.eaf
+
+    ## TODO: Ravi parameters
+    ##      mylist.gwas = list(pvalues=as.numeric(as.numeric(metal$"P.value")),
+    ##                         snp=metal$id,
+    ##                         type="cc",
+    ##                         beta=metal$Effect,
+    ##                         varbeta=metal$StdErr ^ 2,
+    ##                         position=metal$pos,
+    ##                         MAF=metal$MAF,
+    ##                         N=1183912,
+    ##                         s=0.18289535)
+    ##       mylist.eqtl = list(pvalues=as.numeric(as.numeric(tiger$pvalues)),
+    ##                          snp=tiger$snp,
+    ##                          type="quant",
+    ##                          position=tiger$position,
+    ##                          MAF=tiger$MAF,
+    ##                          N=404)
+    ##       coloc = coloc.abf(mylist.eqtl, mylist.gwas)
+
+
     mylist.a <- list(pvalues=dt.rr$a,
                      N=a.n,
                      MAF=ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf),
