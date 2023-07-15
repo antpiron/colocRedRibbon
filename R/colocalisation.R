@@ -122,6 +122,8 @@ coloc <- function (self, ...)
 #' @param b.n the number of for b (Default: NULL)
 #' @param a.type quant or cc mode for coloc (Default: quant)
 #' @param b.type quant or cc mode for coloc (Default: quant)
+#' @param region.mode if set to IQR, use interquantile range on RedRibbon overlap to delimit the region fed
+#'                    to coloc (Default: NULL)
 #' 
 #' @return RedRibbonColoc object
 #' @method coloc RedRibbonColoc
@@ -129,18 +131,25 @@ coloc <- function (self, ...)
 coloc.RedRibbonColoc  <- function(self,
                                   n.reduce = max, a.n = NULL, b.n = NULL,
                                   a.type = "quant", n.type = "quant",
-                                  region = NULL)
+                                  region.mode = NULL)
 {
     ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
     ## TODO: add region https://en.wikipedia.org/wiki/Interquartile_range
-    dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
+    if ("IQR" == region.mode && ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
+    {
+        if (! "position" %in% self$data)
+            stop("Position should be in the input data.frame for IQR region mode.")
+        
+        positions <- self$data[self$quadrants$whole$positions]$position
+        Q1 <- quantile(positions, .25)
+        Q3 <- quantile(positions, .75)
+        IQR <- IQR(positions)
+        min.pos <- (Q1 - 1.5*IQR)
+        max.pos <- (Q3 + 1.5*IQR)
 
-    ## TODO: use risk allele to put in CC mode, beta, varbeta
-    if ( is.null(a.n) )
-        a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
-    if (a.n < 2)
-        stop(paste0("coloc.RedRibbonColoc(): number of samples for `a` is abnormaly low (", a.n, " < 2)"))
-    a.eaf <- dt.rr$a.eaf
+        dt.rr <- self$data[self$quadrants$whole$positions][min.pos < position & position < max.pos,]
+    } else
+        dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
     ## TODO: Ravi parameters
     ##      mylist.gwas = list(pvalues=as.numeric(as.numeric(metal$"P.value")),
@@ -160,25 +169,59 @@ coloc.RedRibbonColoc  <- function(self,
     ##                          N=404)
     ##       coloc = coloc.abf(mylist.eqtl, mylist.gwas)
 
-
-    mylist.a <- list(pvalues = dt.rr$a,
-                     N       = a.n,
-                     MAF     = ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf),
-                     snp     = dt.rr$id,
-                     type    = a.type
+    ## TODO: use risk allele to put in CC mode, beta, varbeta
+    ## List a
+    if ( is.null(a.n) )
+        a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
+    if (a.n < 2)
+        stop(paste0("coloc.RedRibbonColoc(): number of samples for `a` is abnormaly low (", a.n, " < 2)"))
+    mylist.a <- list(pvalues  = dt.rr$a,
+                     N        = a.n,
+                     snp      = dt.rr$id,
+                     type     = a.type,
                      )
-    
+    if ("a.maf" %in% colnames(dt.rr))
+        mylist.a$MAF <- a.maf
+    else if ("a.eaf" %in% colnames(dt.rr))
+    {
+        a.eaf <- dt.rr$a.eaf
+        mylist.a$MAF <- ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf)
+    } else if ("maf" %in% colnames(dt.rr))
+         mylist.a$MAF <- dt.rr$maf
+    if ("position" %in% colnames(dt.rr))
+        mylist.a$position <- dt.rr$position
+    if ("a.beta" %in% colnames(dt.rr))
+        mylist.a$beta <- dt.rr$a.beta
+    if ("a.varbeta" %in% colnames(dt.rr))
+        mylist.a$varbeta <- dt.rr$a.varbeta
+
+    ## List b
     if ( is.null(b.n) )
         b.n <- ceiling(n.reduce(dt.rr$b.n, na.rm=TRUE))
     if (b.n < 2)
         stop(paste0("coloc.RedRibbonColoc(): number of samples for `b` is abnormaly low (", b.n, " < 2)"))
-    b.eaf <- dt.rr$b.eaf
+   
     mylist.b <- list(pvalues = dt.rr$b,
                      N       = b.n,
                      MAF     = ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf),
                      snp     = dt.rr$id,
                      type    = b.type
                      )
+    
+    if ("b.maf" %in% colnames(dt.rr))
+        mylist.b$MAF <- b.maf
+    else if ("b.eaf" %in% colnames(dt.rr))
+    {
+        b.eaf <- dt.rr$b.eaf
+        mylist.b$MAF <- ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf)
+    } else if ("maf" %in% colnames(dt.rr))
+         mylist.b$MAF <- dt.rr$maf
+    if ("position" %in% colnames(dt.rr))
+        mylist.b$position <- dt.rr$position
+    if ("b.beta" %in% colnames(dt.rr))
+        mylist.b$beta <- dt.rr$b.beta
+    if ("b.varbeta" %in% colnames(dt.rr))
+        mylist.b$varbeta <- dt.rr$b.varbeta
 
     coloc.abf.res <- coloc.abf(mylist.a, mylist.b)
     results <- as.data.table(coloc.abf.res$results)
