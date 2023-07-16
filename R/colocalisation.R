@@ -130,7 +130,7 @@ coloc <- function (self, ...)
 #' @export
 coloc.RedRibbonColoc  <- function(self,
                                   n.reduce = max, a.n = NULL, b.n = NULL,
-                                  a.type = "quant", b.type = "quant",
+                                  a.type = "quant", b.type = "quant", a.s=NULL, b.s=NULL,
                                   region.mode = NULL)
 {
     ## keep the RRHO enrichment SNP or IQR region if significant. Run on subset if enriched,
@@ -173,14 +173,20 @@ coloc.RedRibbonColoc  <- function(self,
         a.eaf <- dt.rr$a.eaf
         mylist.a$MAF <- ifelse(a.eaf > 0.5, 1-a.eaf, a.eaf)
     } else if ("maf" %in% colnames(dt.rr))
-         mylist.a$MAF <- dt.rr$maf
+        mylist.a$MAF <- dt.rr$maf
+    
     if ("position" %in% colnames(dt.rr))
         mylist.a$position <- dt.rr$position
+    
     if ("a.beta" %in% colnames(dt.rr))
         mylist.a$beta <- dt.rr$a.beta
+    
     if ("a.varbeta" %in% colnames(dt.rr))
         mylist.a$varbeta <- dt.rr$a.varbeta
 
+    if (! is.null(a.s) )
+         mylist.a$s <- a.s
+    
     ## List b
     if ( is.null(b.n) )
         b.n <- ceiling(n.reduce(dt.rr$b.n, na.rm=TRUE))
@@ -201,13 +207,19 @@ coloc.RedRibbonColoc  <- function(self,
         mylist.b$MAF <- ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf)
     } else if ("maf" %in% colnames(dt.rr))
          mylist.b$MAF <- dt.rr$maf
+
     if ("position" %in% colnames(dt.rr))
         mylist.b$position <- dt.rr$position
+
     if ("b.beta" %in% colnames(dt.rr))
         mylist.b$beta <- dt.rr$b.beta
+
     if ("b.varbeta" %in% colnames(dt.rr))
         mylist.b$varbeta <- dt.rr$b.varbeta
 
+    if (! is.null(b.s) )
+        mylist.a$s <- b.s
+ 
     coloc.abf.res <- coloc.abf(mylist.a, mylist.b)
     results <- as.data.table(coloc.abf.res$results)
     
