@@ -122,8 +122,8 @@ coloc <- function (self, ...)
 #' @param b.n the number of for b (Default: NULL)
 #' @param a.type quant or cc mode for coloc (Default: quant)
 #' @param b.type quant or cc mode for coloc (Default: quant)
-#' @param region.mode if set to IQR, use interquantile range on RedRibbon overlap to delimit the region fed
-#'                    to coloc (Default: NULL)
+#' @param region.mode if set to "IQR", use interquantile range on RedRibbon overlap to delimit the region fed
+#'                    to coloc. If set to "below" t (Default: NULL)
 #' 
 #' @return RedRibbonColoc object
 #' @method coloc RedRibbonColoc
@@ -136,27 +136,35 @@ coloc.RedRibbonColoc  <- function(self,
     ## keep the RRHO enrichment SNP or IQR region if significant. Run on subset if enriched,
     ## otherwise classic coloc on the whole region.
     IQR.bool <- FALSE
-    if (! is.null(region.mode) && "IQR" == region.mode &&
-        ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
+    if (! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
     {
-        if (! "position" %in% colnames(self$data) )
-            stop("Position should be in the input data.frame for IQR region mode.")
-
-        IQR.bool <- TRUE
-        positions <- self$data[self$quadrants$whole$positions]$position
-        Q1 <- quantile(positions, .25)
-        Q3 <- quantile(positions, .75)
-        IQR <- IQR(positions)
-        min.pos <- (Q1 - 1.5*IQR)
-        max.pos <- (Q3 + 1.5*IQR)
-
-        dt <- self$data[self$quadrants$whole$positions]
-        min.a.pvalue <- min(dt$a)
-        min.b.pvalue <- min(dt$b)
+        if (! is.null(region.mode) && "IQR" == region.mode)
+        {
+            if (! "position" %in% colnames(self$data) )
+                stop("Position should be in the input data.frame for IQR region mode.")
+            
+            IQR.bool <- TRUE
+            positions <- self$data[self$quadrants$whole$positions]$position
+            Q1 <- quantile(positions, .25)
+            Q3 <- quantile(positions, .75)
+            IQR <- IQR(positions)
+            min.pos <- (Q1 - 1.5*IQR)
+            max.pos <- (Q3 + 1.5*IQR)
+            
+            dt <- self$data[self$quadrants$whole$positions]
+            dt.rr <- self$data[ (min.pos < position & position < max.pos) | id %in% dt$id,]
+        } else if (! is.null(region.mode) && "below" == region.mode)
+        {
+            dt <- self$data[self$quadrants$whole$positions]
+            min.a.pvalue <- min(dt$a)
+            min.b.pvalue <- min(dt$b)
+            dt.rr <- self$data[ (a > min.a.pvalue & b > min.b.pvalue) | id %in% dt$id,]
+        } else
+            dt.rr <- self$data[self$quadrants$whole$positions]
+        
         dt.rr <- self$data[ (min.pos < position & position < max.pos & a > min.a.pvalue & b > min.b.pvalue ) | id %in% dt$id,]
     } else
-        dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
-
+        dt.rr <- self$data
 
     ## List a
     if ( is.null(a.n) )
