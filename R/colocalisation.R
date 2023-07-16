@@ -150,7 +150,10 @@ coloc.RedRibbonColoc  <- function(self,
         min.pos <- (Q1 - 1.5*IQR)
         max.pos <- (Q3 + 1.5*IQR)
 
-        dt.rr <- self$data[self$quadrants$whole$positions][min.pos < position & position < max.pos,]
+        dt <- self$data[self$quadrants$whole$positions]
+        min.a.pvalue <- min(dt$a)
+        min.b.pvalue <- min(dt$b)
+        dt.rr <- self$data[ (min.pos < position & position < max.pos & a < min.a.pvalue & b < min.b.pvalue) | id %in% dt$id,]
     } else
         dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
