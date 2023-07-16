@@ -130,16 +130,21 @@ coloc <- function (self, ...)
 #' @export
 coloc.RedRibbonColoc  <- function(self,
                                   n.reduce = max, a.n = NULL, b.n = NULL,
-                                  a.type = "quant", n.type = "quant",
+                                  a.type = "quant", b.type = "quant",
                                   region.mode = NULL)
 {
-    ## keep the RRHO enrichment SNP if significant. Run on subset if enriched, otherwise classic coloc.
+    ## keep the RRHO enrichment SNP or IQR region if significant. Run on subset if enriched,
+    ## otherwise classic coloc on the whole region.
     ## TODO: add region https://en.wikipedia.org/wiki/Interquartile_range
-    if ("IQR" == region.mode && ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
+    IQR.bool <- FALSE
+    if (! is.null(region.mode) && "IQR" == region.mode &&
+        ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
     {
-        if (! "position" %in% self$data)
+        print(self$data)
+        if (! "position" %in% colnames(self$data) )
             stop("Position should be in the input data.frame for IQR region mode.")
-        
+
+        IQR.bool <- TRUE
         positions <- self$data[self$quadrants$whole$positions]$position
         Q1 <- quantile(positions, .25)
         Q3 <- quantile(positions, .75)
@@ -178,7 +183,7 @@ coloc.RedRibbonColoc  <- function(self,
     mylist.a <- list(pvalues  = dt.rr$a,
                      N        = a.n,
                      snp      = dt.rr$id,
-                     type     = a.type,
+                     type     = a.type
                      )
     if ("a.maf" %in% colnames(dt.rr))
         mylist.a$MAF <- a.maf
@@ -203,7 +208,6 @@ coloc.RedRibbonColoc  <- function(self,
    
     mylist.b <- list(pvalues = dt.rr$b,
                      N       = b.n,
-                     MAF     = ifelse(b.eaf > 0.5, 1-b.eaf, b.eaf),
                      snp     = dt.rr$id,
                      type    = b.type
                      )
@@ -238,7 +242,15 @@ coloc.RedRibbonColoc  <- function(self,
     credibleSet99 <- results[1:ncredibleSet99, snp]
     PP.H4.abf <- coloc.abf.res$summary["PP.H4.abf"]
     
-    coloc.res <- list(bestSnp = bestSnp, PP.H4.abf = PP.H4.abf, SNP.PP.H4 = SNP.PP.H4, ncredibleSet99 = ncredibleSet99, credibleSet99 = credibleSet99)
+    coloc.res <- list(bestSnp = bestSnp,
+                      PP.H4.abf = PP.H4.abf,
+                      SNP.PP.H4 = SNP.PP.H4,
+                      ncredibleSet99 = ncredibleSet99,
+                      credibleSet99 = credibleSet99
+                      )
+
+    if (IQR.bool)
+        coloc.res$IQR.region <- c(min.pos, max.pos)
 
     self$coloc <- coloc.res
 
@@ -271,7 +283,8 @@ ggRedRibbonColoc <- function (self, plot.order=1:4, show.title=TRUE,
 #' Plot a colocalisation with ggplot
 #'
 #' @param self a colocRedRibbon object
-#' @param plot.order a vector specifying the plot order (default =1:4,  1 = RedRibbon plot, 2 =  manhantan plot for `a`, 3 = plot for `a`and 'b`, 4 = manhantan plot for `b`).
+#' @param plot.order a vector specifying the plot order (default =1:4,  1 = RedRibbon plot,
+#'                   2 =  manhantan plot for `a`, 3 = plot for `a`and 'b`, 4 = manhantan plot for `b`).
 #' @param show.title shows the title (default = TRUE)
 #' @param labels axis labels
 #' @param tss transcription start site
@@ -353,6 +366,11 @@ ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRU
                 geom_text_repel(data=self$data[id %in%  highlight,],
                                 mapping=aes(x=position / 1000000, y=-mylog(get(axis)), label=id),
                                 force = 1, nudge_x = 3, nudge_y = 3, color="darkgray")
+
+            if ("IQR.region" %in% names(self$coloc) )
+                gg <- gg +
+                    geom_vline(xintercept = self$coloc$IQR.region[1] / 1000000, linetype="dotted", color = "orange") +
+                    geom_vline(xintercept = self$coloc$IQR.region[2] / 1000000, linetype="dotted", color = "orange")
         }
 
         return(gg)
