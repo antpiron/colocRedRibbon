@@ -135,7 +135,6 @@ coloc.RedRibbonColoc  <- function(self,
 {
     ## keep the RRHO enrichment SNP or IQR region if significant. Run on subset if enriched,
     ## otherwise classic coloc on the whole region.
-    ## TODO: add region https://en.wikipedia.org/wiki/Interquartile_range
     IQR.bool <- FALSE
     if (! is.null(region.mode) && "IQR" == region.mode &&
         ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
@@ -156,25 +155,7 @@ coloc.RedRibbonColoc  <- function(self,
     } else
         dt.rr <- if ( ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) ) self$data[self$quadrants$whole$positions] else self$data
 
-    ## TODO: Ravi parameters
-    ##      mylist.gwas = list(pvalues=as.numeric(as.numeric(metal$"P.value")),
-    ##                         snp=metal$id,
-    ##                         type="cc",
-    ##                         beta=metal$Effect,
-    ##                         varbeta=metal$StdErr ^ 2,
-    ##                         position=metal$pos,
-    ##                         MAF=metal$MAF,
-    ##                         N=1183912,
-    ##                         s=0.18289535)
-    ##       mylist.eqtl = list(pvalues=as.numeric(as.numeric(tiger$pvalues)),
-    ##                          snp=tiger$snp,
-    ##                          type="quant",
-    ##                          position=tiger$position,
-    ##                          MAF=tiger$MAF,
-    ##                          N=404)
-    ##       coloc = coloc.abf(mylist.eqtl, mylist.gwas)
 
-    ## TODO: use risk allele to put in CC mode, beta, varbeta
     ## List a
     if ( is.null(a.n) )
         a.n <- ceiling(n.reduce(dt.rr$a.n, na.rm=TRUE))
