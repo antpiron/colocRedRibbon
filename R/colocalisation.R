@@ -139,7 +139,6 @@ coloc.RedRibbonColoc  <- function(self,
     if (! is.null(region.mode) && "IQR" == region.mode &&
         ! is.null(self$quadrants) &&  self$quadrants$whole$log_padj >= -log(0.05) )
     {
-        print(self$data)
         if (! "position" %in% colnames(self$data) )
             stop("Position should be in the input data.frame for IQR region mode.")
 
