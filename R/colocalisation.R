@@ -161,8 +161,6 @@ coloc.RedRibbonColoc  <- function(self,
             dt.rr <- self$data[ (a > min.a.pvalue & b > min.b.pvalue) | id %in% dt$id,]
         } else
             dt.rr <- self$data[self$quadrants$whole$positions]
-        
-        dt.rr <- self$data[ (min.pos < position & position < max.pos & a > min.a.pvalue & b > min.b.pvalue ) | id %in% dt$id,]
     } else
         dt.rr <- self$data
 
