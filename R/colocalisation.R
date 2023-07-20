@@ -401,7 +401,7 @@ ggRedRibbonColoc.RedRibbonColoc <- function(self, plot.order=1:4, show.title=TRU
         .nrow <- if (length(list.of.plots) <= 2) length(list.of.plots) else 2
     }
     square.gg <- do.call(ggpubr::ggarrange, c(list.of.plots,
-                                              ncol = .ncol, nrow = .nrow))
+                                              ncol = .ncol, nrow = .nrow, align = "hv"))
     gg_merge <- if (show.title) annotate_figure(square.gg, top = title) else square.gg 
 
     gg_merge <- gg_merge + bgcolor("#FFFFFF") + border(size = 0)
