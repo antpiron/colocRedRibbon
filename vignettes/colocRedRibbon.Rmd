@@ -1,0 +1,131 @@
+---
+title: "colocRedRibbon: a RedRibbon based colocalization of GWAS and eQTL."
+author: "Anthony Piron"
+date: "`r Sys.Date()`"
+abstract: >
+  Large GWAS and eQTL analyses have exacerbated the need to combine those datasets. Colocalizations methods allows
+  to combine those. The multiplicity of signals in GWAS regions around a genes often confound colocalization analyses.
+  colocRedRibbon solves this issue by isolating the signal peaks of interest before analysis.
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+  rmarkdown::pdf_document:
+    toc: true
+    fig_pos: H
+    extra_dependencies: ["float"]
+vignette: >
+  %\VignetteIndexEntry{colocRedRibbon}
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(kableExtra)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "80%",
+  fig.width = 8,
+  fig.height = 8,
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+
+# Analysis with a TH gene region for type 2 diabetes GWAS and human pancreatic synthetic dataset
+
+To demonstrate RedRibbon's basic workflow, we will first work with synthetic dataset (For real data, skip to section [Real data set](#realdataset)).
+
+## Loading the package and the test dataset
+
+We first load the package and the dataset with
+
+```{r dataset, results='hide'}
+library(colocRedRibbon)
+## load data.table package for fast data.frame data structure
+library(data.table)
+## load the test dataset
+data("th", package = "colocRedRibbon")
+```
+
+The `data()` function load in the current environnement a `data.table` named `th.dt`. `head(th.dt)` gives
+	
+```{r df, echo=FALSE}
+head(th.dt) %>%
+  kbl() %>%
+  kable_styling(latex_options = "hold_position", font_size = 9)
+```
+
+## Synopsis
+
+Load the library with
+
+```{r Library loading}
+library(RedRibbon)
+```
+
+Create an S3 colocRedRibbon object for the risk alleles decreasing expression,
+
+```{r s3, results='hide'}
+rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
+                          columns=c(id="rsid", position="pos", a="pval.GWAS", b="pval.eQTL",
+                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.or="or.GWAS", 
+                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.beta="zscore.eQTL"))
+```
+
+The risk allele is specified with the `risk` parameter. The `effect` parameter is set to `<=` to subselect the decreasing risk alleles. The `column` parameter specify the role of the `data.table` columns. `a` is the p-value of the first analysis (here, type 2 diabetes GWAS) and `b` the p-value of second analysis (here, human pancreatic islets eQTL). Those p-values are the one used by RedRibbon overlap analysis.
+
+Next, the colocalization can be computed with
+
+```{r enrichment, results='hide'}
+## Run C. Wallace coloc()
+rrc.dec <- coloc(rrc.dec)
+```
+
+## The colocRedRibbon object
+
+The RedRibbon overlap p-value is given by
+
+```{r RedRibbbonQuadrants}
+rrc.dec$quadrants$whole$pvalue
+```
+
+and the overlapping variants are
+
+```{r RedRibbbonOverlap}
+rrc.dec$data[rrc.dec$quadrants$whole$positions]$id
+```
+
+The coloc structure contains
+```{r coloc}
+rrc.dec$coloc
+```
+
+## Plotting the level map
+
+Results can be plotted with the helper function `ggRedRibbonColoc`:
+
+```{r ggplot}
+gg <- ggRedRibbonColoc(rrc.dec, shortid = "TH")
+gg
+```
+
+The `gg` variable contains a standard ggplot2 object,
+```{r class ggplot}
+class(gg)
+```
+
+It can be manipulated as such. 
+
+
+
+
+
+
+# sessionInfo()
+
+```{r sessionInfo} 
+sessionInfo()
+```

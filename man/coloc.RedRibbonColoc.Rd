@@ -4,13 +4,35 @@
 \alias{coloc.RedRibbonColoc}
 \title{Compute a colocalisation}
 \usage{
-\method{coloc}{RedRibbonColoc}(self, n.reduce = min)
+\method{coloc}{RedRibbonColoc}(
+  self,
+  n.reduce = max,
+  a.n = NULL,
+  b.n = NULL,
+  a.type = "quant",
+  b.type = "quant",
+  a.s = NULL,
+  b.s = NULL,
+  region.mode = NULL
+)
 }
 \arguments{
 \item{self}{a colocRedRibbon object}
 
-\item{n.reduce}{function to reduce the number of sample columns for a and b into a number (Default: min)
-This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP.}
+\item{n.reduce}{function to reduce the number of sample columns for a and b into a number (Default: max)
+This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP.
+a.n or b.n parameters are used if not NULL.}
+
+\item{a.n}{the number of for a (Default: NULL)}
+
+\item{b.n}{the number of for b (Default: NULL)}
+
+\item{a.type}{quant or cc mode for coloc (Default: quant)}
+
+\item{b.type}{quant or cc mode for coloc (Default: quant)}
+
+\item{region.mode}{if set to "IQR", use interquantile range on RedRibbon overlap to delimit the region fed
+to coloc. If set to "below" t (Default: NULL)}
 }
 \value{
 RedRibbonColoc object

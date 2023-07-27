@@ -12,7 +12,8 @@ ggRedRibbonColoc(
   tss = NULL,
   shortid = NULL,
   title = NULL,
-  highlight = c()
+  highlight = c(),
+  .log10 = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ ggRedRibbonColoc(
 \item{title}{the title of the plot}
 
 \item{highlight}{a list of SNPs to highlight}
+
+\item{.log10}{output log10 pval (default = FALSE)}
 }
 \value{
 ggplot object

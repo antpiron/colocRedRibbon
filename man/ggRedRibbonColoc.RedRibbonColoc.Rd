@@ -12,13 +12,15 @@
   tss = NULL,
   shortid = NULL,
   title = NULL,
-  highlight = c()
+  highlight = c(),
+  .log10 = FALSE
 )
 }
 \arguments{
 \item{self}{a colocRedRibbon object}
 
-\item{plot.order}{a vector specifying the plot order (default =1:4,  1 = RedRibbon plot, 2 =  manhantan plot for \code{a}, 3 = plot for \code{a}and 'b\verb{, 4 = manhantan plot for }b`).}
+\item{plot.order}{a vector specifying the plot order (default =1:4,  1 = RedRibbon plot,
+2 =  manhantan plot for \code{a}, 3 = plot for \code{a}and 'b\verb{, 4 = manhantan plot for }b`).}
 
 \item{show.title}{shows the title (default = TRUE)}
 
@@ -31,6 +33,8 @@
 \item{title}{the title of the plot}
 
 \item{highlight}{a list of SNPs to highlight}
+
+\item{.log10}{output log10 pval (default = FALSE)}
 }
 \value{
 ggRedRibbonColoc RedRibbonColoc
