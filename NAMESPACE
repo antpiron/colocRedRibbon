@@ -2,7 +2,6 @@
 
 S3method(coloc,RedRibbonColoc)
 S3method(ggRedRibbonColoc,RedRibbonColoc)
-S3method(ggplot,RedRibbonColoc)
 export(RedRibbonColoc)
 export(coloc)
 export(ggRedRibbonColoc)

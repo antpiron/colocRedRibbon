@@ -34,11 +34,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Analysis with a TH gene region for type 2 diabetes GWAS and human pancreatic synthetic dataset
 
-To demonstrate RedRibbon's basic workflow, we will first work with synthetic dataset (For real data, skip to section [Real data set](#realdataset)).
 
-## Loading the package and the test dataset
+To demonstrate colocRedRibbon's basic workflow, we will colocalize type 2 diabetes GWAS with eQTL for pancreatic Islets. The region around the TH will be analyzed.
+
+# Loading the package and the test dataset
 
 We first load the package and the dataset with
 
@@ -58,13 +58,8 @@ head(th.dt) %>%
   kable_styling(latex_options = "hold_position", font_size = 9)
 ```
 
-## Synopsis
+# Running the colocalization
 
-Load the library with
-
-```{r Library loading}
-library(RedRibbon)
-```
 
 Create an S3 colocRedRibbon object for the risk alleles decreasing expression,
 
@@ -84,7 +79,7 @@ Next, the colocalization can be computed with
 rrc.dec <- coloc(rrc.dec)
 ```
 
-## The colocRedRibbon object
+# The colocRedRibbon object
 
 The RedRibbon overlap p-value is given by
 
@@ -118,9 +113,6 @@ class(gg)
 ```
 
 It can be manipulated as such. 
-
-
-
 
 
 
