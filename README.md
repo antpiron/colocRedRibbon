@@ -36,7 +36,7 @@ data("th", package = "colocRedRibbon")
 
 ## Create colocRedRibbon S3 object
 rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
-                          columns=c(id="rsid", position="pos", a="pval.GWAS", b="pval.eQTL",
+                          columns=c(id="rsid", position="pos", a.type="cc", a="pval.GWAS", b="pval.eQTL",
                                     a.n="n.GWAS", a.eaf="eaf.GWAS", a.or="or.GWAS", 
                                     b.n="n.eQTL", b.eaf="eaf.eQTL", b.beta="zscore.eQTL"))
 		
