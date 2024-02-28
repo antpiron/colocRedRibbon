@@ -78,6 +78,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         {
             are.cols(dt, c("b.dir", "b.eaf", "a.dir", "a.eaf"))
 
+            ## TODO: same than for "a" risk
             dt[b.dir < 0, c("b.dir", "b.beta", "b.eaf", "a.dir", "a.beta", "a.eaf") := list(-b.dir, -b.beta, 1 - b.eaf,
                                                                                             -a.dir, -a.beta, 1 - a.eaf) ]
             dt <- dt[effect(a.dir, 0),]
