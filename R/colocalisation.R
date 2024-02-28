@@ -31,9 +31,11 @@ are.cols <- function (dt, cols)
 RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, niter=96,
                            risk=NULL, effect=`>=`, columns=NULL, shortlist=TRUE)
 {
+    ## the columns that can possibly provided in `data` table
     .columns <- c(id="id", position="position", a="a", b="b",
-                  a.n="a.n", a.eaf="a.eaf", a.or="a.or", a.beta="a.beta", a.varbeta="a.varbeta",
-                  b.n="b.n", b.eaf="b.eaf", b.or="b.or", b.beta="b.beta", b.varbeta="b.varbeta")
+                  a.n="a.n", a.eaf="a.eaf", a.maf="a.maf", a.dir="a.dir", a.beta="a.beta", a.varbeta="a.varbeta",
+                  b.n="b.n", b.eaf="b.eaf", b.maf="b.maf", b.dir="b.dir", b.beta="b.beta", b.varbeta="b.varbeta")
+    ## set .columns values with columns param values
     .columns[names(columns)]  <- columns
     columns <- .columns
     
@@ -41,6 +43,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     dt <-  as.data.table(data)
     .intersect <- intersect(columns, names(dt))
     dt <- dt[, .intersect, with=FALSE]
+    ## change names of original `data` to standardized names from .columns
     .swap_columns <- setNames(names(columns), columns)
     colnames(dt) <- sapply(colnames(dt), function(x) .swap_columns[x])
 
@@ -56,18 +59,18 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         if ( "a" == risk)
         {
             ## print(dt)
-            are.cols(dt, c("a.or", "a.eaf", "b.beta", "b.eaf"))
+            are.cols(dt, c("a.dir", "a.eaf", "b.dir", "b.eaf"))
             
-            dt[a.or < 1.0, c("a.or", "a.eaf", "b.beta", "b.eaf") := list(1.0 / a.or, 1 - a.eaf,
-                                                                         -b.beta, 1 - b.eaf) ]
-            dt <- dt[effect(b.beta, 0),]
+            dt[a.dir < 0, c("a.dir", "a.beta", "a.eaf", "b.dir", "b.beta", "b.eaf") := list(-a.dir, -a.beta, 1 - a.eaf,
+                                                                                            -b.dir, -b.beta, 1 - b.eaf) ]
+            dt <- dt[effect(b.dir, 0),]
         } else if ( "b" == risk )
         {
-            are.cols(dt, c("b.or", "b.eaf", "a.beta", "a.eaf"))
+            are.cols(dt, c("b.dir", "b.eaf", "a.dir", "a.eaf"))
 
-            dt[b.or < 1.0, c("b.or", "b.eaf", "a.beta", "a.eaf") := list(1.0 / b.or, 1 - b.eaf,
-                                                                 -a.beta, 1 - a.eaf) ]
-            dt <- dt[effect(a.beta, 0),]
+            dt[b.dir < 0, c("b.dir", "b.beta", "b.eaf", "a.dir", "a.beta", "a.eaf") := list(-b.dir, -b.beta, 1 - b.eaf,
+                                                                                            -a.dir, -a.beta, 1 - a.eaf) ]
+            dt <- dt[effect(a.dir, 0),]
         } else
             stop("risk should be either 'a' or 'b'.")
     }
