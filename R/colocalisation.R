@@ -59,10 +59,20 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         if ( "a" == risk)
         {
             ## print(dt)
-            are.cols(dt, c("a.dir", "a.eaf", "b.dir", "b.eaf"))
+            are.cols(dt, c("a.dir", "b.dir"))
+
+            for (Table in paste(c("a", "b"), toInvert, sep = "."))
+            {
+                toInvert.beta <- paste(Table, "beta", sep = ".")
+                if (toInvert.beta %in% colnames(dt) )
+                    dt[a.dir < 0, c(toInvert.beta) := -get(toInvert.beta)]
+                
+                toInvert.eaf <- paste(Table, "eaf", sep = ".")
+                if (toInvert.eaf %in% colnames(dt) )
+                    dt[a.dir < 0, c(toInvert.eaf) := 1 - get(toInvert.eaf)]
+            }
             
-            dt[a.dir < 0, c("a.dir", "a.beta", "a.eaf", "b.dir", "b.beta", "b.eaf") := list(-a.dir, -a.beta, 1 - a.eaf,
-                                                                                            -b.dir, -b.beta, 1 - b.eaf) ]
+            dt[a.dir < 0, c("a.dir", "b.dir") := list(-a.dir, -b.dir) ]
             dt <- dt[effect(b.dir, 0),]
         } else if ( "b" == risk )
         {
