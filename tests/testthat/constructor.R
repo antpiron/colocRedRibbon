@@ -36,8 +36,8 @@ test_that("Coloc", {
     expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
 })
 
-data[, a.dir := c(1,  1, rnorm(n-2))]
-data[, b.dir := c(1, -1, rnorm(n-2))]
+data[, a.dir := c(-1,  1, rnorm(n-2))]
+data[, b.dir := c(-1, -1, rnorm(n-2))]
 
 rrColoc <- RedRibbonColoc(data, risk="a") %>% coloc()
 test_that("Coloc", {
@@ -47,6 +47,20 @@ test_that("Coloc", {
 })
 
 rrColoc <- RedRibbonColoc(data, risk="a", effect=`<=`) %>% coloc()
+test_that("Coloc", {
+    expect_equal(rrColoc$coloc$bestSnp, "g2")
+    expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
+    expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
+})
+
+rrColoc <- RedRibbonColoc(data, risk="b") %>% coloc()
+test_that("Coloc", {
+    expect_equal(rrColoc$coloc$bestSnp, "g1")
+    expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
+    expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
+})
+
+rrColoc <- RedRibbonColoc(data, risk="b", effect=`<=`) %>% coloc()
 test_that("Coloc", {
     expect_equal(rrColoc$coloc$bestSnp, "g2")
     expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
