@@ -53,6 +53,7 @@ data("th", package = "colocRedRibbon")
 The `data()` function load in the current environnement a `data.table` named `th.dt`. `head(th.dt)` gives
 	
 ```{r df, echo=FALSE}
+th.dt[,dir.GWAS := log(or.GWAS)]
 head(th.dt) %>%
   kbl() %>%
   kable_styling(latex_options = "hold_position", font_size = 9)
@@ -66,8 +67,8 @@ Create an S3 colocRedRibbon object for the risk alleles decreasing expression,
 ```{r s3, results='hide'}
 rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
                           columns=c(id="rsid", position="pos", a="pval.GWAS", b="pval.eQTL",
-                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.or="or.GWAS", 
-                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.beta="zscore.eQTL"))
+                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.dir="dir.GWAS", 
+                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.dir="zscore.eQTL"))
 ```
 
 The risk allele is specified with the `risk` parameter. The `effect` parameter is set to `<=` to subselect the decreasing risk alleles. The `column` parameter specify the role of the `data.table` columns. `a` is the p-value of the first analysis (here, type 2 diabetes GWAS) and `b` the p-value of second analysis (here, human pancreatic islets eQTL). Those p-values are the one used by RedRibbon overlap analysis.

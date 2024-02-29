@@ -33,12 +33,13 @@ data("th", package = "colocRedRibbon")
 ##   rs1003484     0.640 231420    0.260 0.9965061       A        G   0.92180   2167618    404      -0.098       A        G    0.260
 ##   rs1003889     0.990 187126    0.011 0.9993002       T        G   0.58720   1970108    317       0.543       T        G    0.011
 ## ...
+th.dt$dir.GWAS <- log(th.dt$or.GWAS)
 
 ## Create colocRedRibbon S3 object
 rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
                           columns=c(id="rsid", position="pos", a.type="cc", a="pval.GWAS", b="pval.eQTL",
-                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.or="or.GWAS", 
-                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.beta="zscore.eQTL"))
+                                    a.n="n.GWAS", a.eaf="eaf.GWAS", a.dir="dir.GWAS", 
+                                    b.n="n.eQTL", b.eaf="eaf.eQTL", b.dir="zscore.eQTL"))
 		
 ## Run C. Wallace coloc()
 rrc.dec <- coloc(rrc.dec)

@@ -41,6 +41,7 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     
     
     dt <-  as.data.table(data)
+    ## Keep only columns that are relevant
     .intersect <- intersect(columns, names(dt))
     dt <- dt[, .intersect, with=FALSE]
     ## change names of original `data` to standardized names from .columns
@@ -69,15 +70,15 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         {
             toInvert.beta <- paste(Table, "beta", sep = ".")
             if (toInvert.beta %in% colnames(dt) )
-                dt[get(dirCol) < 0, c(toInvert.beta) := -get(toInvert.beta)]
+                dt[get(riskDir) < 0, c(toInvert.beta) := -get(toInvert.beta)]
             
             toInvert.eaf <- paste(Table, "eaf", sep = ".")
             if (toInvert.eaf %in% colnames(dt) )
-                dt[get(dirCol) < 0, c(toInvert.eaf) := 1 - get(toInvert.eaf)]
+                dt[get(riskDir) < 0, c(toInvert.eaf) := 1 - get(toInvert.eaf)]
         }
             
-        dt[get(dirCol) < 0, c("a.dir", "b.dir") := list(-a.dir, -b.dir) ]
-        dt <- dt[effect(get(dirCol), 0),]
+        dt[get(riskDir) < 0, c("a.dir", "b.dir") := list(-a.dir, -b.dir) ]
+        dt <- dt[effect(get(otherDir), 0),]
     }
 
     a.pval <- dt$a
