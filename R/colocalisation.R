@@ -55,35 +55,29 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
         if (! is.function(effect) )
             stop("'effect' should be a function.")
  
-        
-        if ( "a" == risk)
-        {
-            ## print(dt)
-            are.cols(dt, c("a.dir", "b.dir"))
 
-            for (Table in paste(c("a", "b"), toInvert, sep = "."))
-            {
-                toInvert.beta <- paste(Table, "beta", sep = ".")
-                if (toInvert.beta %in% colnames(dt) )
-                    dt[a.dir < 0, c(toInvert.beta) := -get(toInvert.beta)]
-                
-                toInvert.eaf <- paste(Table, "eaf", sep = ".")
-                if (toInvert.eaf %in% colnames(dt) )
-                    dt[a.dir < 0, c(toInvert.eaf) := 1 - get(toInvert.eaf)]
-            }
-            
-            dt[a.dir < 0, c("a.dir", "b.dir") := list(-a.dir, -b.dir) ]
-            dt <- dt[effect(b.dir, 0),]
-        } else if ( "b" == risk )
-        {
-            are.cols(dt, c("b.dir", "b.eaf", "a.dir", "a.eaf"))
-
-            ## TODO: same than for "a" risk
-            dt[b.dir < 0, c("b.dir", "b.beta", "b.eaf", "a.dir", "a.beta", "a.eaf") := list(-b.dir, -b.beta, 1 - b.eaf,
-                                                                                            -a.dir, -a.beta, 1 - a.eaf) ]
-            dt <- dt[effect(a.dir, 0),]
-        } else
+        if (! risk %in% c("a", "b") )
             stop("risk should be either 'a' or 'b'.")
+        
+        riskDir <-  if ( "a" == risk) "a.dir" else "b.dir"
+        otherDir <- if ( "a" == risk) "b.dir" else "a.dir"
+                                                 
+        ## print(dt)
+        are.cols(dt, c("a.dir", "b.dir"))
+        
+        for (Table in c("a", "b"))
+        {
+            toInvert.beta <- paste(Table, "beta", sep = ".")
+            if (toInvert.beta %in% colnames(dt) )
+                dt[get(dirCol) < 0, c(toInvert.beta) := -get(toInvert.beta)]
+            
+            toInvert.eaf <- paste(Table, "eaf", sep = ".")
+            if (toInvert.eaf %in% colnames(dt) )
+                dt[get(dirCol) < 0, c(toInvert.eaf) := 1 - get(toInvert.eaf)]
+        }
+            
+        dt[get(dirCol) < 0, c("a.dir", "b.dir") := list(-a.dir, -b.dir) ]
+        dt <- dt[effect(get(dirCol), 0),]
     }
 
     a.pval <- dt$a
@@ -261,8 +255,8 @@ coloc.RedRibbonColoc  <- function(self,
                       PP.H4.abf = PP.H4.abf,
                       SNP.PP.H4 = SNP.PP.H4,
                       ncredibleSet99 = ncredibleSet99,
-                      credibleSet99 = credibleSet99
-                      )
+                      credibleSet99 = credibleSet99,
+                      all.snps = results)
 
     if (IQR.bool)
         coloc.res$IQR.region <- c(min.pos, max.pos)

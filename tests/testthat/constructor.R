@@ -23,7 +23,7 @@ test_that("RedRibbon", {
     expect(rrColoc$quadrants$whole$log_padj >= -log(0.05), "padj > 0.05")
 })
 
-data[, a.eaf := runif(n)]
+data[, a.eaf := c(0.5, runif(n-1))]
 data[, b.eaf := a.eaf]
 data[, a.n := 404]
 data[, b.n := 404]
@@ -36,17 +36,19 @@ test_that("Coloc", {
     expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
 })
 
-data[, a.or := exp(rnorm(n))]
-data[, b.beta := rnorm(n)]
+data[, a.dir := c(1,  1, rnorm(n-2))]
+data[, b.dir := c(1, -1, rnorm(n-2))]
 
 rrColoc <- RedRibbonColoc(data, risk="a") %>% coloc()
 test_that("Coloc", {
+    expect_equal(rrColoc$coloc$bestSnp, "g1")
     expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
     expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
 })
 
 rrColoc <- RedRibbonColoc(data, risk="a", effect=`<=`) %>% coloc()
 test_that("Coloc", {
+    expect_equal(rrColoc$coloc$bestSnp, "g2")
     expect(rrColoc$coloc$PP.H4.abf >= 0.8, "PP.H4.abf < 0.8")
     expect(rrColoc$coloc$SNP.PP.H4 >= 0.8, "SNP.PP.H4 < 0.8")
 })
