@@ -45,8 +45,9 @@ RedRibbonColoc <- function(data, algorithm=c("ea", "classic"), half = 6300, nite
     .intersect <- intersect(columns, names(dt))
     dt <- dt[, .intersect, with=FALSE]
     ## change names of original `data` to standardized names from .columns
-    .swap_columns <- setNames(names(columns), columns)
-    colnames(dt) <- sapply(colnames(dt), function(x) .swap_columns[x])
+    dt <- as.data.table(
+        lapply(as.list(columns), function(name) dt[[name]])
+    )
 
     are.cols(dt, c("id", "a", "b"))
     
