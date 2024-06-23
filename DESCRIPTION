@@ -1,6 +1,6 @@
 Package: colocRedRibbon
 Title: Colocalisation of GWAS and eQTL based on RRHO
-Version: 0.2-1
+Version: 0.9-1
 Authors@R: 
     person(given = "Anthony",
            family = "Piron",
@@ -16,7 +16,7 @@ Suggests:
     knitr,
     rmarkdown,
     markdown
-Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr, RedRibbon (>= 0.4.0)
+Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr, RedRibbon (>= 1.3.0)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
