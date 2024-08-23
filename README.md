@@ -100,8 +100,9 @@ colocRedRibbon is a method designed to identify common causal candidates by exam
 The method employs a two-step approach for shortlisting variants: 
 -  __Risk allele effect step:__  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
 -  __RedRibbon Overlap Step:__ In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting. <br/>
-
+<p align="center">
 <img src="https://github.com/user-attachments/assets/6c1e4cb5-d331-428e-9002-fec2e2e6976f" width="2500" height="250">
+</p>
 
 # FAQ
 
@@ -109,7 +110,9 @@ The method employs a two-step approach for shortlisting variants:
 The area between the 25th percentile (first quartile) and the 75th percentile (third quartile) of the chromosomal positions of the core set is referred to as the interquartile range (IQR).
 Using the IQR mode allows for a more focused analysis by including only those variants that are relevant to the central distribution of the core set. This mode is particularly beneficial when you want to minimize the influence of outliers and concentrate on the most relevant variants in your analysis. <br/>
 
+<p align="center">
 <img src="https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e" width="700" height="200">
+</p>
 
 # Citation
 
