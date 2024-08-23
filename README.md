@@ -1,6 +1,7 @@
 # Description
 
-colocRedRibbon: a [RedRibbon](https://github.com/antpiron/RedRibbon) based colocalization of GWAS and eQTL.
+__colocRedRibbon__ is a [RedRibbon](https://github.com/antpiron/RedRibbon) based colocalization of large genome-wide association studies (GWAS) and expression quantitative trait locus (eQTL) analyses. colocRedRibbon was developped to pinpoint variants associated both with increased risk for a disease and gene expression variation. The method uses novel pre-filtering steps, shortlisting variants before applying colocalization analysis. 
+
 
 # Installation
 
@@ -44,14 +45,14 @@ rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
                                     a.n="n.GWAS", a.eaf="eaf.GWAS", a.dir="dir.GWAS", 
                                     b.n="n.eQTL", b.eaf="eaf.eQTL", b.dir="zscore.eQTL"))
 ```
-S3 object is built on a data.frame, here "th.dt", requiring the columns _id_, _a_, _b_ and _position_, representing the name of the SNP, the p-value of the first analysis, 
-the p-value of the second analysis, and the position on the chromosome, respectively. Additionnal columns are used for computing the colocalisation.
+colocRedRibbon object is constructed on a data.frame, here "th.dt". The data.frame should include the columns _id_, _a_, _b_ and _position_, which represent the name of the SNP (Single Nucleotide Polymorphism), the p-value of the first analysis, 
+the p-value of the second analysis, and the position of the SNP on the chromosome, respectively. In addition to these essential columns, the data.frame may include supplementary columns that facilitate the computation of colocalization.
 
-The specified parameters are: <br/> 
-*  ```risk``` which can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis we assigned to _a_ or _b_ column, (e.g. or.GWAS or or.eQTL). __Is it correct? in the code you wrote: risk the GWAS dataset with an odd-ratio (e.g. a.or or b.or) either NULL, 'a' or 'b'__
-*  ```effect``` is an operator like `>=` or `<=` indicating the effect direction for __maybe compared to?__ the non-risk dataset __which is the non-risk dataset?__
-*  ```columns``` is a named vector including the column names in the provided data.frame.
-*  When ```shortlist``` is _TRUE_ it first runs _RedRibbon_ and then _coloc_ (default = _TRUE_).
+These parameters are specified as follows: <br/> 
+*  ```risk```: This parameter can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis assigned to the _a_ or _b_ column, such as or.GWAS or or.eQTL. __Is it correct? in the code you wrote: risk the GWAS dataset with an odd-ratio (e.g. a.or or b.or) either NULL, 'a' or 'b'__
+*  ```effect```: Specifies an operator like `>=` or `<=` to indicate the effect direction for __maybe compared to?__ the non-risk dataset __which is the non-risk dataset?__
+*  ```columns```: A named vector that includes the column names present in the provided data.frame.
+*  ```shortlist```: When this parameter is set to _TRUE_ the function first runs _RedRibbon_ and then _coloc_ (default = _TRUE_).
 
 To compute the colocalization __self-explanatory?__ only the colocRedRibbon object is required.
 
@@ -59,13 +60,13 @@ To compute the colocalization __self-explanatory?__ only the colocRedRibbon obje
 ## Run C. Wallace coloc(). What is Wallace coloc?
 rrc.dec <- coloc(rrc.dec)
 ```
-Optional parameters can be specified: <br/> 
-*  ```n.reduce``` is a function to reduce the number of sample columns for _a_ and _b_ into a number (default = _max_). This is needed as some eQTL/GWAS toolchains output an effective number of samples by SNP. _a.n_ or _b.n_ parameters are used if not _NULL_. __not clear to me__
-*  ```a.n``` is the number of __what?__ for _a_ (default = _NULL_)
-*   ```b.n``` is the number of __what?__ for _b_ (default = _NULL_)
-*   ```a.type``` can either be _quant_ or _cc_ to denote quantitative or case-control mode for _a_ (default = _quant_)
-*   ```b.type``` can either be _quant_ or _cc_ to denote quantitative or case-control mode for _b_ (default = quant)
-*   ```region.mode``` can be set to _"IQR"_, to fed coloc with the interquantile range region from RedRibbon overlap. Or it can be set to _"below"_ __then what?__ (default = _NULL_)
+Several optional parameters can be specified to customize the behavior of the _colocRedRibbon_ object: <br/> 
+*  ```n.reduce```: This parameter accepts a function that reduces the number of sample columns for _a_ and _b_ to a single value (default = _max_). This is particularly useful because some eQTL/GWAS toolchains report an effective number of samples per SNP. If _a.n_ or _b.n_ are provided and not _NULL_, they will be used instead.  __not clear to me__
+*  ```a.n```: Represents the number of samples for _a_. The default value is NULL, meaning it will use the effective number of samples if not specified. __correct?__
+*   ```b.n```: Represents the number of samples for _b_. Similar to _a.n_, the default value is NULL.
+*   ```a.type```: This parameter can be set to either _quant_ or _cc_ to denote whether the analysis for _a_ is in quantitative mode or case-control mode, respectively. The default value is _quant_.
+*   ```b.type```: This parameter functions similarly to _a.type_, allowing you to specify _quant_ or _cc_ for the analysis of _b_. The default value is also _quant_.
+*   ```region.mode```: This parameter can be set to _"IQR"_ to feed coloc with the interquartile range region derived from the overlap in _RedRibbon_. Alternatively, it can be set to _"below"_ (default is _NULL_), which specifies a different region mode. __then what?__ 
 
 To extract the best SNP __what does best mean here?__ :
 
@@ -74,15 +75,17 @@ coloc.res["bestSnp"]
 ## Is this correct command?
 ## Anything else that we can extract?
 ```
-## Plotting the colocalisation 
-The colocalisation can be plotted with the helper function _ggRedRibbonColoc_.
+## Plotting the colocalization 
+Colocalization results can be visualized using the helper function _ggRedRibbonColoc_. This function helps generate plots that illustrate the colocalization analysis. By evaluating the p-values of the overlap map, users can easily interpret the relationships between SNPs associated with an increased risk for a disease and those responsible for gene expression variation. 
 
 ```R
 ggRedRibbonColoc(rrc.dec, shortid = "TH")
 ```
 
-```rrc.dec``` is the colocRedRibbon object and ```shortid``` indicates the name of the gene of interest. <br/>
-Additional parameters that can be used include: <br/>
+_ggRedRibbonColoc_ requires to specify the colocRedRibbon object containing the colocalization data, here _rrc.dec_, and to indicate the name of the gene of interest by assigning it to the parameter ```shortid```. <br/>
+
+Additional optional parameters to customize the visualization of colocalization results: <br/>
+
 *  ```plot.order``` is a vector specifying the plot order (default = 1:4, where 1 = RedRibbon plot, 2 =  manhantan plot for _a_, 3 = plot for _a_ and _b_, 4 = manhantan plot for _b_)
 *  ```show.title``` if TRUE shows the title of the plot (default = _TRUE_)
 *  ```title``` the title of the plot
