@@ -86,13 +86,23 @@ _ggRedRibbonColoc_ requires to specify the colocRedRibbon object containing the 
 
 Additional optional parameters to customize the visualization of colocalization results: <br/>
 
-*  ```plot.order``` is a vector specifying the plot order (default = 1:4, where 1 = RedRibbon plot, 2 =  manhantan plot for _a_, 3 = plot for _a_ and _b_, 4 = manhantan plot for _b_)
-*  ```show.title``` if TRUE shows the title of the plot (default = _TRUE_)
-*  ```title``` the title of the plot
-*  ```labels``` the axis labels (default = _NULL_)
-*  ```tss``` is a numerical value used to indicate the position of transcription start site (default = _NULL_)
-*  ```highlight``` provides a list of SNPs to highlight
-*  ```.log10``` is used to output the log10 pval (default = FALSE)
+*  ```plot.order```: A vector that determines the order of the plots (default is 1:4, where 1 represents the RedRibbon plot, 2 is the Manhattan plot for _a_, 3 is the plot for _a_ and _b_, and 4 is the Manhattan plot for _b_) 
+*  ```show.title```: If set to _TRUE_, displays the title of the plot (default = _TRUE_)
+*  ```title```: Specifies the title of the plot
+*  ```labels```: Provides axis labels (default = _NULL_)
+*  ```tss```: A numerical value used to indicate the position of the transcription start site (default = _NULL_)
+*  ```highlight```: Accepts a list of SNPs to be highlighted in the plot.
+*  ```.log10```: If set to _TRUE_, outputs the log10 p-values (default = _FALSE_)
+
+# colocRedRibbon workflow
+colocRedRibbon is a method designed to identify common causal candidates by examining the colocalization of GWAS and eQTL. This approach aims to pinpoint variants that are linked to both disease risk and variation in gene expression. <br/>
+
+The method employs a two-step approach for shortlisting variants: 
+-  Risk allele effect step:  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
+-  In the overlap step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, ranked by the P-values to examine potential overlap between the ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. Otherwise, coloc is applied to the two effect sets without overlap shortlisting.
+
+
+
 
 # Citation
 
