@@ -99,8 +99,7 @@ colocRedRibbon is a method designed to identify common causal candidates by exam
 
 The method employs a two-step approach for shortlisting variants: 
 -  Risk allele effect step:  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
--  In the overlap step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, ranked by the P-values to examine potential overlap between the ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. Otherwise, coloc is applied to the two effect sets without overlap shortlisting.
-
+-  RedRibbon Overlap Step: In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting.
 
 
 
