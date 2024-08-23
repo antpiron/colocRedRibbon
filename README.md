@@ -49,7 +49,7 @@ colocRedRibbon object is constructed on a data.frame, here "th.dt". The data.fra
 the p-value of the second analysis, and the position of the SNP on the chromosome, respectively. In addition to these essential columns, the data.frame may include supplementary columns that facilitate the computation of colocalization.
 
 These parameters are specified as follows: <br/> 
-*  ```risk```: This parameter can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis assigned to the _a_ or _b_ column, such as or.GWAS or or.eQTL. __Is it correct? in the code you wrote: risk the GWAS dataset with an odd-ratio (e.g. a.or or b.or) either NULL, 'a' or 'b'__
+*  ```risk```: This parameter can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis assigned to the _a_ or _b_ column, such as or.GWAS or or.eQTL. __Is it correct?__
 *  ```effect```: Specifies an operator like `>=` or `<=` to indicate the effect direction for __maybe compared to?__ the non-risk dataset __which is the non-risk dataset?__
 *  ```columns```: A named vector that includes the column names present in the provided data.frame.
 *  ```shortlist```: When this parameter is set to _TRUE_ the function first runs _RedRibbon_ and then _coloc_ (default = _TRUE_).
@@ -98,10 +98,18 @@ Additional optional parameters to customize the visualization of colocalization 
 colocRedRibbon is a method designed to identify common causal candidates by examining the colocalization of GWAS and eQTL. This approach aims to pinpoint variants that are linked to both disease risk and variation in gene expression. <br/>
 
 The method employs a two-step approach for shortlisting variants: 
--  Risk allele effect step:  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
--  RedRibbon Overlap Step: In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting.
+-  __Risk allele effect step:__  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
+-  __RedRibbon Overlap Step:__ In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting. <br/>
 
+<img src="https://github.com/user-attachments/assets/6c1e4cb5-d331-428e-9002-fec2e2e6976f" width="2500" height="250">
 
+# FAQ
+
+## When to use the IQR mode?
+The area between the 25th percentile (first quartile) and the 75th percentile (third quartile) of the chromosomal positions of the core set is referred to as the interquartile range (IQR).
+Using the IQR mode allows for a more focused analysis by including only those variants that are relevant to the central distribution of the core set. This mode is particularly beneficial when you want to minimize the influence of outliers and concentrate on the most relevant variants in your analysis. <br/>
+
+<img src="https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e" width="700" height="200">
 
 # Citation
 
