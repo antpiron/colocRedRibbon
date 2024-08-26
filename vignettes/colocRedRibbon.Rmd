@@ -3,9 +3,7 @@ title: "colocRedRibbon: a RedRibbon based colocalization of GWAS and eQTL."
 author: "Anthony Piron"
 date: "`r Sys.Date()`"
 abstract: >
-  Large GWAS and eQTL analyses have exacerbated the need to combine those datasets. Colocalizations methods allows
-  to combine those. The multiplicity of signals in GWAS regions around a genes often confound colocalization analyses.
-  colocRedRibbon solves this issue by isolating the signal peaks of interest before analysis.
+  Large genome-wide association studies (GWAS) and expression quantitative trait locus (eQTL) analyses can be integrated to better understand the shared genetic causality of complex traits and diseases. Colocalization methods allow to combine those datasets. One of the main challenges in colocalization analyses is the presence of multiple signals in GWAS regions around a gene. This multiplicity of signals can confound the colocalization process, making it difficult to pinpoint the specific variants driving the observed associations. To adress this issue, colocRedRibbon isolates the signal peaks of interest before conducting the colocalization analysis.
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -36,7 +34,7 @@ knitr::opts_chunk$set(
 
 
 
-To demonstrate colocRedRibbon's basic workflow, we will colocalize type 2 diabetes GWAS with eQTL for pancreatic Islets. The region around the TH will be analyzed.
+To demonstrate colocRedRibbon's basic workflow, we will perform a colocalization analysis using type 2 diabetes GWAS data and pancreatic islet eQTL data. We will use the real dataset "th", which is composed of a GWAS for type 2 diabetes (derived from the https://www.diagram-consortium.org/) and an eQTL colocalization study for the gene TH, encoding tyrosine hydroxylase (originating from http://tiger.bsc.es/). The region around the TH gene will be analyzed to identify shared genetic variants that influence both type 2 diabetes risk and TH gene expression in pancreatic islets.
 
 # Loading the package and the test dataset
 
@@ -50,7 +48,7 @@ library(data.table)
 data("th", package = "colocRedRibbon")
 ```
 
-The `data()` function load in the current environnement a `data.table` named `th.dt`. `head(th.dt)` gives
+The `data()` function loads a `data.table` named `th.dt` into the current environment. Once the data is loaded, you can use the `head()` function to display the first few rows of the dataset.
 	
 ```{r df, echo=FALSE}
 th.dt[,dir.GWAS := log(or.GWAS)]
@@ -71,13 +69,25 @@ rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
                                     b.n="n.eQTL", b.eaf="eaf.eQTL", b.dir="zscore.eQTL"))
 ```
 
-The risk allele is specified with the `risk` parameter. The `effect` parameter is set to `<=` to subselect the decreasing risk alleles. The `column` parameter specify the role of the `data.table` columns. `a` is the p-value of the first analysis (here, type 2 diabetes GWAS) and `b` the p-value of second analysis (here, human pancreatic islets eQTL). Those p-values are the one used by RedRibbon overlap analysis.
+The risk allele is specified with the `risk` parameter, which can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis assigned to the _a_ or _b_ column. 
+The `effect` parameter is set to `<=` to subselect the decreasing risk alleles. The `column` parameter defines the role of the `data.table` columns. The data.table should include the columns _id_, _a_, _b_ and _position_, which represent the name of the SNP (Single Nucleotide Polymorphism), the p-value of the first analysis (here, type 2 diabetes GWAS), 
+the p-value of the second analysis (here, human pancreatic islets eQTL), and the position of the SNP on the chromosome, respectively. In the following steps, RedRibbon  will use the specified p-values for the overlap analysis. In addition to these essential columns, the data.table may include supplementary columns that facilitate the computation of colocalization.
+
 
 Next, the colocalization can be computed with
 
 ```{r enrichment, results='hide'}
 ## Run C. Wallace coloc()
 rrc.dec <- coloc(rrc.dec)
+```
+Several optional parameters can be specified to customize the behavior of the coloc function. For more information see the documentation.
+
+To extract the best SNP:
+
+```R
+coloc.res["bestSnp"]
+## Is this command correct?
+## Anything else that we can extract?
 ```
 
 # The colocRedRibbon object
@@ -101,20 +111,38 @@ rrc.dec$coloc
 
 ## Plotting the level map
 
-Results can be plotted with the helper function `ggRedRibbonColoc`:
+Colocalization results can be visualized using the helper function _ggRedRibbonColoc_. This function helps generate plots that illustrate the colocalization analysis. By evaluating the p-values of the overlap map, users can easily interpret the relationships between SNPs associated with an increased risk for a disease and those responsible for gene expression variation. 
 
 ```{r ggplot}
 gg <- ggRedRibbonColoc(rrc.dec, shortid = "TH")
 gg
 ```
+For additional optional parameters to customize the visualization of colocalization results see the documentation.
 
-The `gg` variable contains a standard ggplot2 object,
+The gg variable contains a standard ggplot2 object, which can be modified and customized using the ggplot2 parameters in R.
 ```{r class ggplot}
 class(gg)
 ```
 
-It can be manipulated as such. 
+## colocRedRibbon workflow
+colocRedRibbon is a method designed to identify common causal candidates by examining the colocalization of GWAS and eQTL. This approach aims to pinpoint variants that are linked to both disease risk and variation in gene expression. <br/>
 
+The method employs a two-step approach for shortlisting variants: 
+-  __Risk allele effect step:__  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
+-  __RedRibbon Overlap Step:__ In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting. <br/>
+<p align="center">
+<img src="https://github.com/user-attachments/assets/6c1e4cb5-d331-428e-9002-fec2e2e6976f" width="2500" height="250">
+</p>
+
+# FAQ
+
+## When to use the IQR mode?
+The area between the 25th percentile (first quartile) and the 75th percentile (third quartile) of the chromosomal positions of the core set is referred to as the interquartile range (IQR).
+Using the IQR mode allows for a more focused analysis by including only those variants that are relevant to the central distribution of the core set. This mode is particularly beneficial when you want to minimize the influence of outliers and concentrate on the most relevant variants in your analysis. <br/>
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e" width="700" height="200">
+</p>
 
 
 # sessionInfo()
