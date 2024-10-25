@@ -140,9 +140,8 @@ The method employs a two-step approach for shortlisting variants:
 The area between the 25th percentile (first quartile) and the 75th percentile (third quartile) of the chromosomal positions of the core set is referred to as the interquartile range (IQR).
 Using the IQR mode allows for a more focused analysis by including only those variants that are relevant to the central distribution of the core set. This mode is particularly beneficial when you want to minimize the influence of outliers and concentrate on the most relevant variants in your analysis. <br/>
 
-<p align="center">
-<img src="https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e" width="700" height="200">
-</p>
+
+![Alt text](https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e)
 
 
 # sessionInfo()
