@@ -131,14 +131,14 @@ The method employs a two-step approach for shortlisting variants:
 -  __Risk allele effect step:__  In this step, variants are categorized into two distinct groups based on their direction of effect on gene expression, i.e., down- or upregulating. The upregulating variant set comprises the variants whose risk alleles increase gene expression, and the downregulating set risk alleles that decrease gene expression. Each of these variant sets is analyzed independently in subsequent steps.
 -  __RedRibbon Overlap Step:__ In this step, the RedRibbon rank-rank hypergeometric overlap method is applied on both GWAS and eQTL variants, which are ranked according to their P-values. This analysis examines the potential overlap between the two ranked lists. If a significant overlap is detected by RedRibbon, these shortlisted SNPs are further analyzed by the coloc package. If no significant overlap is found, the coloc method is still applied to the two effect sets without the preliminary overlap shortlisting.
 
-![Alt text](https://github.com/user-attachments/assets/6c1e4cb5-d331-428e-9002-fec2e2e6976f)
+![](https://github.com/user-attachments/assets/6c1e4cb5-d331-428e-9002-fec2e2e6976f)
 
 ## IQR mode
 
 The area between the 25th percentile (first quartile) and the 75th percentile (third quartile) of the chromosomal positions of the core set is referred to as the interquartile range (IQR). IQR method includes the overlapping variants from *RedRibbon* and the variants in the IQR. The method delimits the region scrutiny.
 
 
-![IQR region delimiting](https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e)
+![](https://github.com/user-attachments/assets/dcb95536-9a13-4de4-85b4-31d2a88a2c1e)
 
 
 The IQR mode is activated by setting the `region.mode` parameter,
@@ -148,7 +148,7 @@ The IQR mode is activated by setting the `region.mode` parameter,
 rrcIQR.dec <- coloc(rrc.dec, region.mode = "IQR")
 ```
 
-```{r ggplotIQR, include = FALSE}
+```{r ggplotIQR}
 gg <- ggRedRibbonColoc(rrcIQR.dec, shortid = "TH")
 gg
 ```
