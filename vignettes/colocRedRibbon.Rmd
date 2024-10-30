@@ -76,7 +76,7 @@ the p-value of the second analysis (here, human pancreatic islet eQTL), and the 
 
 Next, the co-localization can be computed with
 
-```{r enrichment, results='hide'}
+```{r enrichment, results='hide', warning=FALSE}
 ## Run C. Wallace coloc()
 rrc.dec <- coloc(rrc.dec)
 ```
@@ -145,7 +145,7 @@ IQR method includes the overlapping variants from *RedRibbon* and the variants i
 
 The IQR mode is activated by setting the `region.mode` parameter,
 
-```{r colocIQR, results='hide'}
+```{r colocIQR, results='hide', warning=FALSE}
 ## Run C. Wallace coloc()
 rrcIQR.dec <- coloc(rrc.dec, region.mode = "IQR")
 ```
