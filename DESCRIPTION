@@ -1,6 +1,6 @@
 Package: colocRedRibbon
-Title: Colocalisation of GWAS and eQTL based on RRHO
-Version: 0.9-1
+Title: Colocalisation of GWAS and eQTL based on RedRibbon rank-rank hypergeometric overlap
+Version: 1.0-1
 Authors@R: 
     person(given = "Anthony",
            family = "Piron",
@@ -20,7 +20,7 @@ Depends: R (>= 3.1.0), coloc, data.table, ggplot2, ggpubr, RedRibbon (>= 1.3.0)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Imports: 
