@@ -5,7 +5,7 @@ __colocRedRibbon__ is a [RedRibbon](https://github.com/antpiron/RedRibbon) based
 
 # Installation
 
-This procedure have been tested on debian/ubuntu but should work on any linux distribution.
+This procedure has been tested on debian/ubuntu but should work on any linux distribution.
 
 ## Directly from Github
 
@@ -22,6 +22,12 @@ devtools::install_github("antpiron/colocRedRibbon", ref = "dev")
 ```
 
 # Documentation
+
+A [R vignette with fully reproducible examples is available here](https://antpiron.github.io/colocRedRibbon.html). You can also open it from R with
+
+vignette("RedRibbon")
+
+
 
 ```R
 library(colocRedRibbon)
@@ -45,7 +51,7 @@ rrc.dec <- RedRibbonColoc(th.dt, risk="a", effect=`<=`,
                                     b.n="n.eQTL", b.eaf="eaf.eQTL", b.dir="zscore.eQTL"))
 ```
 These parameters are specified as follows: <br/> 
-*  ```risk```: This parameter can be either _NULL_, _'a'_ or _'b'_. It represents the odd-ratios for the analysis assigned to the _a_ or _b_ column, such as or.GWAS or or.eQTL. __Is it correct?__
+*  ```risk```: This parameter can be either _'a'_ or _'b'_. It represents the odds-ratios for the analysis assigned to the _a_ or _b_ column, such as or.GWAS or or.eQTL. __Is it correct?__
 *  ```effect```: Specifies an operator like `>=` or `<=` to indicate the effect direction for __maybe compared to?__ the non-risk dataset __which is the non-risk dataset?__
 *  ```columns```: A named vector that includes the column names present in the provided data.table.
 *  ```shortlist```: When this parameter is set to _TRUE_ the function first runs _RedRibbon_ and then _coloc_ (default = _TRUE_).
