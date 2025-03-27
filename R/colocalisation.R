@@ -185,7 +185,7 @@ coloc.RedRibbonColoc  <- function(self,
                      type     = a.type
                      )
     if ("a.maf" %in% colnames(dt.rr))
-        mylist.a$MAF <- a.maf
+        mylist.a$MAF <- dt.rr$a.maf
     else if ("a.eaf" %in% colnames(dt.rr))
     {
         a.eaf <- dt.rr$a.eaf
@@ -218,7 +218,7 @@ coloc.RedRibbonColoc  <- function(self,
                      )
     
     if ("b.maf" %in% colnames(dt.rr))
-        mylist.b$MAF <- b.maf
+        mylist.b$MAF <- dt.rr$b.maf
     else if ("b.eaf" %in% colnames(dt.rr))
     {
         b.eaf <- dt.rr$b.eaf
