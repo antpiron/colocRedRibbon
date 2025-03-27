@@ -1,6 +1,6 @@
 Package: colocRedRibbon
 Title: Colocalisation of GWAS and eQTL based on RedRibbon rank-rank hypergeometric overlap
-Version: 1.0-1
+Version: 1.1-1
 Authors@R: 
     person(given = "Anthony",
            family = "Piron",
